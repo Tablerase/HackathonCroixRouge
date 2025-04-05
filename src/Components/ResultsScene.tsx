@@ -48,7 +48,7 @@ const ResultsScene: React.FC = () => {
       </Typography>
 
       <List sx={{ mb: 4 }}>
-        {displayQuestions.map((question) => (
+        {displayQuestions.map((question: any) => (
           <ListItem key={question.id} divider>
             <ListItemText
               primary={question.text}

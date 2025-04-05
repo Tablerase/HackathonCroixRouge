@@ -12,7 +12,7 @@ import {
 
 interface RiskAssessmentSceneProps {
   userLocation: { lat: number; lng: number } | null;
-  riskData: any;
+  riskData: Record<string, number>;
 }
 
 const RiskAssessmentScene: React.FC<RiskAssessmentSceneProps> = ({
@@ -72,10 +72,18 @@ const RiskAssessmentScene: React.FC<RiskAssessmentSceneProps> = ({
                 p: 2,
                 borderRadius: 1,
                 bgcolor:
-                  value > 70 ? "#ffebee" : value > 40 ? "#fff8e1" : "#e8f5e9",
+                  (value as number) > 70
+                    ? "#ffebee"
+                    : (value as number) > 40
+                    ? "#fff8e1"
+                    : "#e8f5e9",
                 border: 1,
                 borderColor:
-                  value > 70 ? "#ef5350" : value > 40 ? "#ffc107" : "#66bb6a",
+                  (value as number) > 70
+                    ? "#ef5350"
+                    : (value as number) > 40
+                    ? "#ffc107"
+                    : "#66bb6a",
               }}
             >
               <Typography variant="subtitle1">
@@ -84,7 +92,11 @@ const RiskAssessmentScene: React.FC<RiskAssessmentSceneProps> = ({
               <Typography
                 variant="h6"
                 color={
-                  value > 70 ? "error" : value > 40 ? "warning" : "success"
+                  (value as number) > 70
+                    ? "error"
+                    : (value as number) > 40
+                    ? "warning"
+                    : "success"
                 }
               >
                 {value}%

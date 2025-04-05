@@ -133,7 +133,7 @@ const Test: React.FC = () => {
                           />
                         </ListItem>
                         {index <
-                          Object.keys(data.data.genAI_info.key_features)
+                          Object.keys(data.data?.genAI_info.key_features || {})
                             .length -
                             1 && <Divider />}
                       </React.Fragment>

@@ -31,7 +31,7 @@ const App: React.FC = () => {
     lat: number;
     lng: number;
   } | null>(null);
-  const [riskData, setRiskData] = useState(null);
+  const [riskData, setRiskData] = useState<Record<string, number> | null>(null);
 
   return (
     <ThemeProvider theme={theme}>
@@ -57,7 +57,7 @@ const App: React.FC = () => {
               element={
                 <RiskAssessmentScene
                   userLocation={userLocation}
-                  riskData={riskData}
+                  riskData={riskData || {}}
                 />
               }
             />

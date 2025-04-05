@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Box, Button, CircularProgress, Alert, Paper } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
-import L from "leaflet";
+// import L from "leaflet";
 
 /**
  * API Georisque
@@ -162,6 +162,7 @@ const MapScene: React.FC<MapSceneProps> = ({
       }
       // Parse the JSON response
       const data = await response.json();
+      console.log("API response:", data);
       // Transform the data to the desired format
       // Extract relevant information from the response and make a risk by percentage for each main risk
       // setRiskData(data);
