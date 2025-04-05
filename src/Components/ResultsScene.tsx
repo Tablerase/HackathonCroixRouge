@@ -9,7 +9,7 @@ import {
   ListItemText,
   Button,
 } from "@mui/material";
-import Test from "./Test";
+import TimelineAnalysis from "./TimelineAnalysis";
 
 const ResultsScene: React.FC = () => {
   const location = useLocation();
@@ -37,27 +37,38 @@ const ResultsScene: React.FC = () => {
 
   // Use passed questions or fallback if none were passed
   const displayQuestions = questions.length > 0 ? questions : fallbackQuestions;
+  console.log("Questions:", displayQuestions);
+  console.log("Answers:", answers);
+
+  // Get the full question objects with choices (needed for the analysis)
+  const fullQuestions = window.sessionStorage.getItem("questions")
+    ? JSON.parse(window.sessionStorage.getItem("questions") || "[]")
+    : [];
 
   return (
-    <Paper
-      elevation={3}
-      sx={{ p: 3, borderRadius: 2, maxWidth: 800, mx: "auto" }}
-    >
-      <Typography variant="h5" gutterBottom align="center">
-        Résultats de l'évaluation
-      </Typography>
+    <Box sx={{ maxWidth: 800, mx: "auto", p: 2 }}>
+      <Paper elevation={3} sx={{ p: 3, borderRadius: 2, mb: 4 }}>
+        <Typography variant="h5" gutterBottom align="center">
+          Résultats de l'évaluation
+        </Typography>
 
-      <List sx={{ mb: 4 }}>
-        {displayQuestions.map((question: any) => (
-          <ListItem key={question.id} divider>
-            <ListItemText
-              primary={question.text}
-              secondary={answers[question.id] || "Not answered"}
-              primaryTypographyProps={{ fontWeight: "bold" }}
-            />
-          </ListItem>
-        ))}
-      </List>
+        <List sx={{ mb: 4 }}>
+          {displayQuestions.map((question: any) => (
+            <ListItem key={question.id} divider>
+              <ListItemText
+                primary={question.text}
+                secondary={answers[question.id] || "Not answered"}
+                primaryTypographyProps={{ fontWeight: "bold" }}
+              />
+            </ListItem>
+          ))}
+        </List>
+      </Paper>
+
+      {/* Add the TimelineAnalysis component */}
+      {fullQuestions.length > 0 && (
+        <TimelineAnalysis questions={fullQuestions} answers={answers} />
+      )}
 
       <Box sx={{ mt: 4, display: "flex", justifyContent: "space-between" }}>
         <Button
@@ -74,8 +85,7 @@ const ResultsScene: React.FC = () => {
           Retour à l'Accueil
         </Button>
       </Box>
-      <Test />
-    </Paper>
+    </Box>
   );
 };
 

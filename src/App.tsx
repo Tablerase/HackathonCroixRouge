@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import {
   Container,
-  Typography,
   CssBaseline,
   ThemeProvider,
   createTheme,
@@ -49,10 +48,11 @@ const App: React.FC = () => {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Router>
-        <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
-          <Typography variant="h4" component="h1" gutterBottom align="center">
+        {/* <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}> */}
+        <Container>
+          {/* <Typography variant="h4" component="h1" gutterBottom align="center">
             TousConcernés - POC
-          </Typography>
+          </Typography> */}
 
           <Routes>
             <Route

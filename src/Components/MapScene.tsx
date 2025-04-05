@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Box, Button, CircularProgress, Alert, Paper } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import { Typography } from "@mui/material";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 // import Test from "./Test";
@@ -189,6 +190,9 @@ const MapScene: React.FC<MapSceneProps> = ({
 
   return (
     <Paper elevation={3} sx={{ p: 3, borderRadius: 2 }}>
+      <Typography variant="h4" component="h1" gutterBottom align="center">
+        TousConcernés - POC
+      </Typography>
       <Box
         sx={{
           display: "flex",

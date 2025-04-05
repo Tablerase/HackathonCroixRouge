@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Typography,
@@ -13,6 +13,66 @@ import {
   Button,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import { styled } from "@mui/material/styles";
+import "./ImageScene.css";
+
+const SceneContainer = styled("div")({
+  position: "fixed", // Change from "relative" to "fixed"
+  top: 0,
+  left: 0,
+  width: "100%",
+  height: "100vh", // Use height instead of minHeight
+  margin: 0,
+  padding: 0,
+  overflow: "hidden",
+  backgroundImage: "url(/house_with_flooding.png)", // Update with your image path
+  backgroundSize: "cover",
+  backgroundPosition: "center",
+  "&::before": {
+    content: '""',
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "rgba(0, 0, 40, 0.4)", // Dark blue overlay for better contrast
+    zIndex: 1,
+  },
+});
+
+const ContentWrapper = styled("div")({
+  position: "absolute", // Change to "absolute" since parent is fixed
+  top: 0,
+  left: 0,
+  width: "100%",
+  height: "100%",
+  zIndex: 2,
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  justifyContent: "center",
+  overflow: "auto", // Allow scrolling if content is too tall
+  padding: "20px",
+  boxSizing: "border-box", // Include padding in the element's width and height
+});
+
+const RainContainer = styled("div")({
+  position: "absolute",
+  width: "100%",
+  height: "100%",
+  top: 0,
+  left: 0,
+  zIndex: 0,
+});
+
+// const RainDrop = styled("div")({
+//   position: "absolute",
+//   width: "2px",
+//   background:
+//     "linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.6))",
+//   borderRadius: "50%",
+//   pointerEvents: "none",
+// });
 
 interface AnswerChoice {
   id: number;
@@ -26,6 +86,56 @@ interface Question {
   choices: AnswerChoice[];
 }
 
+const RainEffect = () => {
+  useEffect(() => {
+    const rainContainer = document.querySelector(".rain-container");
+    if (!rainContainer) return;
+
+    const createRainDrop = () => {
+      const drop = document.createElement("div");
+      drop.className = "rain-drop";
+
+      // Random properties for natural look
+      const size = Math.random() * 2 + 3; // Height between 3-5px
+      const posX = Math.random() * 100; // Random horizontal position
+      const duration = Math.random() * 0.5 + 0.7; // Animation duration
+      const delay = Math.random() * 2; // Random start delay
+
+      // Apply styles
+      drop.style.cssText = `
+        left: ${posX}%;
+        height: ${size}px;
+        animation: rainfall ${duration}s linear ${delay}s infinite;
+      `;
+
+      rainContainer.appendChild(drop);
+
+      // Remove drops after they've fallen to avoid memory issues
+      setTimeout(() => {
+        if (drop.parentNode === rainContainer) {
+          rainContainer.removeChild(drop);
+        }
+      }, (duration + delay) * 1000);
+    };
+
+    // Create initial raindrops
+    for (let i = 0; i < 100; i++) {
+      createRainDrop();
+    }
+
+    // Continue adding raindrops
+    const interval = setInterval(() => {
+      for (let i = 0; i < 5; i++) {
+        createRainDrop();
+      }
+    }, 300);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  return <RainContainer className="rain-container" />;
+};
+
 const InteractiveImageScene: React.FC = () => {
   const navigate = useNavigate();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
@@ -37,7 +147,7 @@ const InteractiveImageScene: React.FC = () => {
   const questions: Question[] = [
     {
       id: 1,
-      text: "Vous vivez dans une maison près d'une rivière, une zone connue pour être inondable. La météo annonce de fortes pluies depuis plusieurs jours. Vous recevez une alerte officielle (Vigicrues / Météo-France / FR-Alert) : risque imminent de crue et d'inondation.",
+      text: "Vous vivez dans une zone connue pour être inondable. La météo annonce de fortes pluies depuis plusieurs jours. Vous recevez une alerte officielle (Vigicrues / Météo-France / FR-Alert) : risque imminent de crue et d'inondation.",
       choices: [
         {
           id: 1,
@@ -144,6 +254,9 @@ const InteractiveImageScene: React.FC = () => {
   };
 
   const handleFinish = () => {
+    // Store full questions in sessionStorage
+    window.sessionStorage.setItem("questions", JSON.stringify(questions));
+
     // Navigate to a results page with both answers and questions in the state
     navigate("/results", {
       state: {
@@ -154,116 +267,131 @@ const InteractiveImageScene: React.FC = () => {
   };
 
   return (
-    <Paper
-      elevation={3}
-      sx={{ p: 3, borderRadius: 2, maxWidth: 800, mx: "auto" }}
-    >
-      {/* Question Stepper/Timeline */}
-      <Stepper
-        activeStep={currentQuestionIndex}
-        alternativeLabel
-        sx={{ mb: 4 }}
-      >
-        {questions.map((question, index) => (
-          <Step key={question.id}>
-            <StepLabel>Question {index + 1}</StepLabel>
-          </Step>
-        ))}
-      </Stepper>
-
-      {/* Current Question */}
-      <Box sx={{ mb: 4, textAlign: "center" }}>
-        <Typography variant="h5" gutterBottom>
-          {currentQuestion.text}
-        </Typography>
-      </Box>
-
-      {/* Answer Choices */}
-      <Grid container spacing={2} justifyContent="center">
-        {currentQuestion.choices.map((choice) => (
-          <Grid key={choice.id}>
-            {choice.isTextField ? (
-              <Card
-                sx={{
-                  height: "100%",
-                  display: "flex",
-                  flexDirection: "column",
-                  p: 2,
-                }}
-              >
-                <CardContent sx={{ flexGrow: 1 }}>
-                  <Typography variant="subtitle1" gutterBottom>
-                    Your own answer:
-                  </Typography>
-                  <TextField
-                    fullWidth
-                    multiline
-                    rows={3}
-                    variant="outlined"
-                    placeholder="Type your answer here..."
-                    value={customAnswer}
-                    onChange={(e) => setCustomAnswer(e.target.value)}
-                  />
-                </CardContent>
-                <Box sx={{ p: 2, pt: 0 }}>
-                  <Button
-                    variant="contained"
-                    fullWidth
-                    onClick={handleCustomAnswerSubmit}
-                    disabled={!customAnswer.trim()}
-                  >
-                    Submit
-                  </Button>
-                </Box>
-              </Card>
-            ) : (
-              <Card
-                sx={{
-                  height: "100%",
-                  cursor: "pointer",
-                  transition: "all 0.2s",
-                  "&:hover": { transform: "scale(1.02)", boxShadow: 3 },
-                  bgcolor:
-                    answers[currentQuestion.id] === choice.text
-                      ? "primary.light"
-                      : "background.paper",
-                }}
-                onClick={() =>
-                  handleAnswerSelect(currentQuestion.id, choice.text)
-                }
-              >
-                <CardContent>
-                  <Typography variant="body1" align="center" sx={{ p: 2 }}>
-                    {choice.text}
-                  </Typography>
-                </CardContent>
-              </Card>
-            )}
-          </Grid>
-        ))}
-      </Grid>
-
-      {/* Navigation */}
-      <Box sx={{ display: "flex", justifyContent: "space-between", mt: 4 }}>
-        <Button
-          variant="outlined"
-          onClick={goToPreviousQuestion}
-          disabled={currentQuestionIndex === 0}
+    <SceneContainer>
+      <RainEffect />
+      <ContentWrapper>
+        <Paper
+          elevation={3}
+          sx={{
+            p: 3,
+            borderRadius: 2,
+            maxWidth: 800,
+            mx: "auto",
+            background: "rgba(255, 255, 255, 0.9)", // Make paper slightly transparent
+          }}
         >
-          Previous
-        </Button>
+          {/* Question Stepper/Timeline */}
+          <Stepper
+            activeStep={currentQuestionIndex}
+            alternativeLabel
+            sx={{ mb: 4 }}
+          >
+            {questions.map((question, index) => (
+              <Step key={question.id}>
+                <StepLabel>Question {index + 1}</StepLabel>
+              </Step>
+            ))}
+          </Stepper>
 
-        <Typography variant="body2" sx={{ alignSelf: "center" }}>
-          Question {currentQuestionIndex + 1} of {questions.length}
-        </Typography>
+          {/* Current Question */}
+          <Box sx={{ mb: 4, textAlign: "center" }}>
+            <Typography variant="h5" gutterBottom>
+              {currentQuestion.text}
+            </Typography>
+          </Box>
 
-        {currentQuestionIndex === questions.length - 1 && (
-          <Button variant="contained" color="success" onClick={handleFinish}>
-            Finish
-          </Button>
-        )}
-      </Box>
-    </Paper>
+          {/* Answer Choices */}
+          <Grid container spacing={2} justifyContent="center">
+            {currentQuestion.choices.map((choice) => (
+              <Grid key={choice.id}>
+                {choice.isTextField ? (
+                  <Card
+                    sx={{
+                      height: "100%",
+                      display: "flex",
+                      flexDirection: "column",
+                      p: 2,
+                    }}
+                  >
+                    <CardContent sx={{ flexGrow: 1 }}>
+                      <Typography variant="subtitle1" gutterBottom>
+                        Your own answer:
+                      </Typography>
+                      <TextField
+                        fullWidth
+                        multiline
+                        rows={3}
+                        variant="outlined"
+                        placeholder="Type your answer here..."
+                        value={customAnswer}
+                        onChange={(e) => setCustomAnswer(e.target.value)}
+                      />
+                    </CardContent>
+                    <Box sx={{ p: 2, pt: 0 }}>
+                      <Button
+                        variant="contained"
+                        fullWidth
+                        onClick={handleCustomAnswerSubmit}
+                        disabled={!customAnswer.trim()}
+                      >
+                        Submit
+                      </Button>
+                    </Box>
+                  </Card>
+                ) : (
+                  <Card
+                    sx={{
+                      height: "100%",
+                      cursor: "pointer",
+                      transition: "all 0.2s",
+                      "&:hover": { transform: "scale(1.02)", boxShadow: 3 },
+                      bgcolor:
+                        answers[currentQuestion.id] === choice.text
+                          ? "primary.light"
+                          : "background.paper",
+                    }}
+                    onClick={() =>
+                      handleAnswerSelect(currentQuestion.id, choice.text)
+                    }
+                  >
+                    <CardContent>
+                      <Typography variant="body1" align="center" sx={{ p: 2 }}>
+                        {choice.text}
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                )}
+              </Grid>
+            ))}
+          </Grid>
+
+          {/* Navigation */}
+          <Box sx={{ display: "flex", justifyContent: "space-between", mt: 4 }}>
+            <Button
+              variant="outlined"
+              onClick={goToPreviousQuestion}
+              disabled={currentQuestionIndex === 0}
+            >
+              Previous
+            </Button>
+
+            <Typography variant="body2" sx={{ alignSelf: "center" }}>
+              Question {currentQuestionIndex + 1} of {questions.length}
+            </Typography>
+
+            {currentQuestionIndex === questions.length - 1 && (
+              <Button
+                variant="contained"
+                color="success"
+                onClick={handleFinish}
+              >
+                Finish
+              </Button>
+            )}
+          </Box>
+        </Paper>
+      </ContentWrapper>
+    </SceneContainer>
   );
 };
 
