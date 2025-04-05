@@ -9,7 +9,7 @@ export default defineConfig({
     proxy: {
       "/api": {
         target:
-          "https://https://hackathon-ia-et-crise.fr/tousconcernes/rag-system:8090/api/app",
+          "https://https://hackathon-ia-et-crise.fr/tousconcernes/rag-system/api/app",
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ""),
       },
