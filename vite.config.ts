@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const apiUrl = process.env.VITE_API_URL || "http://localhost:8000";
+const apiUrl = process.env.VITE_API_URL || "http://localhost:8090/api/app";
 
 //! TODO: Update the target URL to the correct one
 // https://vite.dev/config/

@@ -33,60 +33,85 @@ const InteractiveImageScene: React.FC = () => {
   const [customAnswer, setCustomAnswer] = useState<string>("");
 
   // Mock data for questions
+  // ![TODO] Replace with actual data fetching logic (questions from API)
   const questions: Question[] = [
     {
       id: 1,
-      text: "What should you include in your emergency kit?",
+      text: "Vous vivez dans une maison près d'une rivière, une zone connue pour être inondable. La météo annonce de fortes pluies depuis plusieurs jours. Vous recevez une alerte officielle (Vigicrues / Météo-France / FR-Alert) : risque imminent de crue et d'inondation.",
       choices: [
-        { id: 1, text: "Only non-perishable food" },
-        { id: 2, text: "Only water and first aid supplies" },
+        {
+          id: 1,
+          text: "Commencer à monter les objets de valeur et les biens essentiels à l'étage.",
+        },
+        {
+          id: 2,
+          text: "Ignorer l'alerte, pensant que ce ne sera pas si grave cette fois-ci.",
+        },
         {
           id: 3,
-          text: "Water, food, first aid supplies, flashlight, and important documents",
+          text: "Descendre à la cave pour essayer de protéger les affaires qui y sont stockées.",
         },
         { id: 4, text: "", isTextField: true },
       ],
     },
     {
       id: 2,
-      text: "What is the recommended amount of water to store per person per day?",
+      text: "L'eau commence à s'infiltrer au rez-de-chaussée. Le niveau monte rapidement.",
       choices: [
-        { id: 1, text: "1 liter" },
-        { id: 2, text: "2 liters" },
-        { id: 3, text: "4 liters" },
+        {
+          id: 1,
+          text: "Préparer rapidement le kit d'urgence (eau, nourriture, radio, lampe, papiers, médicaments...).",
+        },
+        {
+          id: 2,
+          text: "Tenter de partir en voiture pour rejoindre des proches sur les hauteurs.",
+        },
+        {
+          id: 3,
+          text: "Essayer de bloquer l'eau en calfeutrant les portes avec des serviettes et des sacs de sable du garage.",
+        },
         { id: 4, text: "", isTextField: true },
       ],
     },
     {
       id: 3,
-      text: "Where is the safest place during an earthquake?",
+      text: "Le rez-de-chaussée est maintenant inondé (plus d'un mètre d'eau). Vous êtes réfugiés à l'étage avec votre famille.",
       choices: [
-        { id: 1, text: "Under a sturdy table" },
-        { id: 2, text: "Near windows" },
-        { id: 3, text: "Outside the building if possible" },
+        {
+          id: 1,
+          text: "Vous poster près d'une fenêtre à l'étage et utiliser une lampe de poche pour signaler votre présence aux secours.",
+        },
+        {
+          id: 2,
+          text: "Descendre prudemment pour évaluer les dégâts et voir si quelque chose peut encore être sauvé.",
+        },
+        {
+          id: 3,
+          text: "Essayer d'appeler les secours avec le téléphone fixe, même s'il ne semble plus fonctionner.",
+        },
         { id: 4, text: "", isTextField: true },
       ],
     },
-    {
-      id: 4,
-      text: "What should you do if you are trapped under debris?",
-      choices: [
-        { id: 1, text: "Stay quiet and wait for help" },
-        { id: 2, text: "Try to move as much as possible" },
-        { id: 3, text: "Make noise to attract attention" },
-        { id: 4, text: "", isTextField: true },
-      ],
-    },
-    {
-      id: 5,
-      text: "What is the best way to stay informed during a disaster?",
-      choices: [
-        { id: 1, text: "Social media" },
-        { id: 2, text: "Local news channels" },
-        { id: 3, text: "Emergency alert systems" },
-        { id: 4, text: "", isTextField: true },
-      ],
-    },
+    // {
+    //   id: 4,
+    //   text: "What should you do if you are trapped under debris?",
+    //   choices: [
+    //     { id: 1, text: "Stay quiet and wait for help" },
+    //     { id: 2, text: "Try to move as much as possible" },
+    //     { id: 3, text: "Make noise to attract attention" },
+    //     { id: 4, text: "", isTextField: true },
+    //   ],
+    // },
+    // {
+    //   id: 5,
+    //   text: "What is the best way to stay informed during a disaster?",
+    //   choices: [
+    //     { id: 1, text: "Social media" },
+    //     { id: 2, text: "Local news channels" },
+    //     { id: 3, text: "Emergency alert systems" },
+    //     { id: 4, text: "", isTextField: true },
+    //   ],
+    // },
   ];
 
   const currentQuestion = questions[currentQuestionIndex];

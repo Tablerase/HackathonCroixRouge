@@ -44,7 +44,7 @@ const ResultsScene: React.FC = () => {
       sx={{ p: 3, borderRadius: 2, maxWidth: 800, mx: "auto" }}
     >
       <Typography variant="h5" gutterBottom align="center">
-        Your Preparation Summary
+        Résultats de l'évaluation
       </Typography>
 
       <List sx={{ mb: 4 }}>
@@ -64,17 +64,17 @@ const ResultsScene: React.FC = () => {
           variant="outlined"
           onClick={() => navigate("/interactive-guide")}
         >
-          Back to Questions
+          Retour aux Questions
         </Button>
         <Button
           variant="contained"
           color="primary"
           onClick={() => navigate("/")}
         >
-          Return Home
+          Retour à l'Accueil
         </Button>
-        <Test />
       </Box>
+      <Test />
     </Paper>
   );
 };

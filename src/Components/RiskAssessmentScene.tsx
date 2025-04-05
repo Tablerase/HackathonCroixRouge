@@ -112,7 +112,7 @@ const RiskAssessmentScene: React.FC<RiskAssessmentSceneProps> = ({
           color="primary"
           onClick={() => navigate("/interactive-guide")}
         >
-          View Preparation Guide
+          Simule moi une situation
         </Button>
       </Box>
     </Paper>

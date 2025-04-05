@@ -18,10 +18,22 @@ import ResultsScene from "./Components/ResultsScene";
 const theme = createTheme({
   palette: {
     primary: {
-      main: "#e53935", // Red color for Croix-Rouge theme
+      main: "#c62828", // Darker red color for Croix-Rouge theme
     },
     secondary: {
-      main: "#424242",
+      main: "#212121", // Darker secondary color
+    },
+    background: {
+      default: "#e0e0e0", // Slightly darker background
+    },
+  },
+  components: {
+    MuiPaper: {
+      styleOverrides: {
+        root: {
+          backgroundColor: "#f0f0f0",
+        },
+      },
     },
   },
 });

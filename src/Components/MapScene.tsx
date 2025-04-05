@@ -3,7 +3,7 @@ import { Box, Button, CircularProgress, Alert, Paper } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
-import Test from "./Test";
+// import Test from "./Test";
 // import L from "leaflet";
 
 /**
@@ -11,6 +11,7 @@ import Test from "./Test";
  * https://www.data.gouv.fr/fr/dataservices/api-georisques/
  * carte: https://www.georisques.gouv.fr/cartes-interactives#/
  * risk: https://www.georisques.gouv.fr/doc-api#/Risques/rechercheRisques_4
+ * doc: https://www.georisques.gouv.fr/doc-api#/
  *
  * endpoint: https://georisques.gouv.fr/api/v1/gaspar/risques
  * parameters:
@@ -241,7 +242,7 @@ const MapScene: React.FC<MapSceneProps> = ({
           {loading ? "Evaluation..." : "Evalue mes risques"}
         </Button>
 
-        <Test />
+        {/* <Test /> */}
       </Box>
     </Paper>
   );

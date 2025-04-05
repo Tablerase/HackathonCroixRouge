@@ -45,17 +45,17 @@ const Test: React.FC = () => {
     setError(null);
     try {
       // First fetch data from the specified URL
-      const collectionResponse = await axios.get(
-        "https://hackathon-ia-et-crise.fr/tousconcernes/rag-system/api/app/collection/list",
-        {
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-          withCredentials: false, // Set to true if credentials are needed
-        }
-      );
-      console.log("Collection API Response:", collectionResponse.data);
+      // const collectionResponse = await axios.get(
+      //   "https://hackathon-ia-et-crise.fr/tousconcernes/rag-system/api/app/collection/list",
+      //   {
+      //     headers: {
+      //       Accept: "application/json",
+      //       "Content-Type": "application/json",
+      //     },
+      //     withCredentials: false, // Set to true if credentials are needed
+      //   }
+      // );
+      // console.log("Collection API Response:", collectionResponse.data);
       const response = await axios.get<ApiResponse>("/api/test/");
       setData(response.data);
       console.log("API Response:", response.data);
