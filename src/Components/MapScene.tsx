@@ -3,6 +3,7 @@ import { Box, Button, CircularProgress, Alert, Paper } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
+import Test from "./Test";
 // import L from "leaflet";
 
 /**
@@ -239,6 +240,8 @@ const MapScene: React.FC<MapSceneProps> = ({
         >
           {loading ? "Evaluation..." : "Evalue mes risques"}
         </Button>
+
+        <Test />
       </Box>
     </Paper>
   );
