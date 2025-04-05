@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://hackathon-ia-et-crise.fr/tousconcernes/rag-system/api/app/:path*"
+    }
+  ]
+}
