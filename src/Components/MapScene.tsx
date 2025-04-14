@@ -210,6 +210,7 @@ const MapScene: React.FC<MapSceneProps> = ({
               center={[position.lat, position.lng]}
               zoom={12}
               style={{ height: "100%", width: "100%", borderRadius: 8 }}
+              attributionControl={false}
             >
               <TileLayer
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
