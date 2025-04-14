@@ -145,7 +145,7 @@ const InteractiveImageScene: React.FC = () => {
   const [customAnswer, setCustomAnswer] = useState<string>("");
 
   // Mock data for questions
-  // ![TODO] Replace with actual data fetching logic (questions from API)
+  // ![TODO] Replace with actual data fetching logic (questions from API) and Translate to English
   const questions: Question[] = [
     {
       id: 1,
@@ -297,7 +297,7 @@ const InteractiveImageScene: React.FC = () => {
 
           {/* Current Question */}
           <Box sx={{ mb: 4, textAlign: "center" }}>
-            <Typography variant="h5" gutterBottom>
+            <Typography variant="h6" gutterBottom>
               {currentQuestion.text}
             </Typography>
           </Box>
@@ -317,14 +317,14 @@ const InteractiveImageScene: React.FC = () => {
                   >
                     <CardContent sx={{ flexGrow: 1 }}>
                       <Typography variant="subtitle1" gutterBottom>
-                        Your own answer:
+                        Autre réponse :
                       </Typography>
                       <TextField
                         fullWidth
                         multiline
                         rows={3}
                         variant="outlined"
-                        placeholder="Type your answer here..."
+                        placeholder="Entrez votre réponse ici..."
                         value={customAnswer}
                         onChange={(e) => setCustomAnswer(e.target.value)}
                       />
@@ -336,7 +336,7 @@ const InteractiveImageScene: React.FC = () => {
                         onClick={handleCustomAnswerSubmit}
                         disabled={!customAnswer.trim()}
                       >
-                        Submit
+                        Soumettre
                       </Button>
                     </Box>
                   </Card>
@@ -357,7 +357,11 @@ const InteractiveImageScene: React.FC = () => {
                     }
                   >
                     <CardContent>
-                      <Typography variant="body1" align="center" sx={{ p: 2 }}>
+                      <Typography
+                        variant="body1"
+                        align="center"
+                        sx={{ p: 0.5 }}
+                      >
                         {choice.text}
                       </Typography>
                     </CardContent>
@@ -374,7 +378,7 @@ const InteractiveImageScene: React.FC = () => {
               onClick={goToPreviousQuestion}
               disabled={currentQuestionIndex === 0}
             >
-              Previous
+              Précédent
             </Button>
 
             <Typography variant="body2" sx={{ alignSelf: "center" }}>
@@ -387,7 +391,7 @@ const InteractiveImageScene: React.FC = () => {
                 color="success"
                 onClick={handleFinish}
               >
-                Finish
+                Terminer
               </Button>
             )}
           </Box>

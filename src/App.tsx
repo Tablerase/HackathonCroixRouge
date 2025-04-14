@@ -30,8 +30,7 @@ const theme = createTheme({
     MuiPaper: {
       styleOverrides: {
         root: {
-          backgroundColor: "#f0f0f0",
-          opacity: 0.9,
+          backgroundColor: "rgba(255, 255, 255, 0.9)", // Semi-transparent white
           backdropFilter: "blur(5px)",
           borderRadius: "8px",
           boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
