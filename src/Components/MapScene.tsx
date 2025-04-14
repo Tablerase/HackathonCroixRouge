@@ -208,7 +208,7 @@ const MapScene: React.FC<MapSceneProps> = ({
           {position ? (
             <MapContainer
               center={[position.lat, position.lng]}
-              zoom={8}
+              zoom={12}
               style={{ height: "100%", width: "100%" }}
             >
               <TileLayer
