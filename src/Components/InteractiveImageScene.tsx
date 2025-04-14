@@ -17,17 +17,18 @@ import { styled } from "@mui/material/styles";
 import "./ImageScene.css";
 
 const SceneContainer = styled("div")({
-  position: "fixed", // Change from "relative" to "fixed"
+  position: "absolute", // Change from "fixed" to "absolute"
   top: 0,
   left: 0,
   width: "100%",
-  height: "100vh", // Use height instead of minHeight
+  minHeight: "100vh", // Use minHeight instead of height
+  height: "auto", // Allow it to grow if needed
   margin: 0,
   padding: 0,
-  overflow: "hidden",
-  backgroundImage: "url(/house_with_flooding.png)", // Update with your image path
+  backgroundImage: "url(/house_with_flooding.png)",
   backgroundSize: "cover",
   backgroundPosition: "center",
+  backgroundAttachment: "fixed", // Keep background fixed while scrolling
   "&::before": {
     content: '""',
     position: "absolute",
@@ -35,25 +36,26 @@ const SceneContainer = styled("div")({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: "rgba(0, 0, 40, 0.4)", // Dark blue overlay for better contrast
+    backgroundColor: "rgba(0, 0, 40, 0.4)",
     zIndex: 1,
   },
 });
 
 const ContentWrapper = styled("div")({
-  position: "absolute", // Change to "absolute" since parent is fixed
-  top: 0,
-  left: 0,
+  position: "relative", // Change from "absolute"
   width: "100%",
-  height: "100%",
+  minHeight: "100vh",
   zIndex: 2,
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
   justifyContent: "center",
-  overflow: "auto", // Allow scrolling if content is too tall
   padding: "20px",
-  boxSizing: "border-box", // Include padding in the element's width and height
+  boxSizing: "border-box",
+  // Add these for iOS Safari
+  "@supports (-webkit-touch-callout: none)": {
+    minHeight: "-webkit-fill-available",
+  },
 });
 
 const RainContainer = styled("div")({

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Container,
   CssBaseline,
@@ -31,6 +31,14 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           backgroundColor: "#f0f0f0",
+          opacity: 0.9,
+          backdropFilter: "blur(5px)",
+          borderRadius: "8px",
+          boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
+          margin: "8px",
+          "&:hover": {
+            boxShadow: "0 8px 16px rgba(0, 0, 0, 0.3)",
+          },
         },
       },
     },
@@ -44,16 +52,37 @@ const App: React.FC = () => {
   } | null>(null);
   const [riskData, setRiskData] = useState<Record<string, number> | null>(null);
 
+  useEffect(() => {
+    // Fix for mobile viewport height issues
+    const setVH = () => {
+      const vh = window.innerHeight * 0.01;
+      // Set the CSS variable --vh to the viewport height
+      document.documentElement.style.setProperty("--vh", `${vh}px`);
+    };
+
+    setVH();
+    window.addEventListener("resize", setVH);
+
+    return () => {
+      window.removeEventListener("resize", setVH);
+    };
+  }, []);
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Router>
-        {/* <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}> */}
-        <Container>
-          {/* <Typography variant="h4" component="h1" gutterBottom align="center">
-            TousConcernés - POC
-          </Typography> */}
-
+        <Container
+          disableGutters
+          sx={{
+            minHeight: "100vh",
+            display: "flex",
+            flexDirection: "column",
+            "@supports (-webkit-touch-callout: none)": {
+              minHeight: "-webkit-fill-available",
+            },
+          }}
+        >
           <Routes>
             <Route
               path="/"

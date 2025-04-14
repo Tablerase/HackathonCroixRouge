@@ -204,7 +204,7 @@ const MapScene: React.FC<MapSceneProps> = ({
         {loading && <CircularProgress />}
         {error && <Alert severity="error">{error}</Alert>}
 
-        <Box sx={{ height: 600, width: "100%" }}>
+        <Box sx={{ height: "calc(var(--vh, 1vh) * 70)", width: "100%" }}>
           {position ? (
             <MapContainer
               center={[position.lat, position.lng]}

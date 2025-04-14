@@ -5,18 +5,29 @@ body {
   padding: 0;
   height: 100%;
   width: 100%;
-  overflow: hidden;
+  overflow-x: hidden; /* Only hide horizontal overflow */
 }
 
 body,
 #root {
   min-height: 100vh;
   position: relative;
+  background: linear-gradient(135deg, #23272b 0%, #342b40 100%);
+}
+
+/* Use viewport units for mobile that account for browser UI */
+@media screen and (max-width: 768px) {
+  body,
+  #root {
+    /* Use a more reliable height calculation */
+    min-height: -webkit-fill-available;
+    height: -webkit-fill-available;
+  }
 }
 
 @keyframes rainfall {
   0% {
-    transform: translateY(-10px);
+    transform: translateY(-40px);
     opacity: 0;
   }
   10% {
