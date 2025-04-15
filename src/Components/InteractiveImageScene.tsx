@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Box,
   Typography,
@@ -11,18 +11,20 @@ import {
   Step,
   StepLabel,
   Button,
+  StepConnector,
+  stepConnectorClasses,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { styled } from "@mui/material/styles";
 import "./ImageScene.css";
 
 const SceneContainer = styled("div")({
-  position: "absolute", // Change from "fixed" to "absolute"
+  position: "absolute",
   top: 0,
   left: 0,
   width: "100%",
-  minHeight: "100vh", // Use minHeight instead of height
-  height: "auto", // Allow it to grow if needed
+  minHeight: "100vh",
+  height: "auto",
   margin: 0,
   padding: 0,
   backgroundImage: "url(/house_with_flooding.png)",
@@ -42,7 +44,7 @@ const SceneContainer = styled("div")({
 });
 
 const ContentWrapper = styled("div")({
-  position: "relative", // Change from "absolute"
+  position: "relative",
   width: "100%",
   minHeight: "100vh",
   zIndex: 2,
@@ -66,6 +68,29 @@ const RainContainer = styled("div")({
   left: 0,
   zIndex: 0,
 });
+
+const ColorLibConnector = styled(StepConnector)(({ theme }) => ({
+  [`&.${stepConnectorClasses.alternativeLabel}`]: {
+    top: 22,
+  },
+  [`&.${stepConnectorClasses.active}`]: {
+    [`& .${stepConnectorClasses.line}`]: {
+      backgroundImage: `linear-gradient(to right, ${theme.palette.primary.main}, ${theme.palette.primary.light})`,
+    },
+  },
+  [`&.${stepConnectorClasses.completed}`]: {
+    [`& .${stepConnectorClasses.line}`]: {
+      backgroundImage: `linear-gradient(to right, ${theme.palette.primary.main}, ${theme.palette.primary.main})`,
+    },
+  },
+  [`& .${stepConnectorClasses.line}`]: {
+    height: 3,
+    border: 0,
+    backgroundColor:
+      theme.palette.mode === "dark" ? theme.palette.grey[800] : "#eaeaf0",
+    borderRadius: 1,
+  },
+}));
 
 // const RainDrop = styled("div")({
 //   position: "absolute",
@@ -143,6 +168,14 @@ const InteractiveImageScene: React.FC = () => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
   const [answers, setAnswers] = useState<{ [questionId: number]: string }>({});
   const [customAnswer, setCustomAnswer] = useState<string>("");
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // Scroll to the top of the content when the question changes
+    if (contentRef.current) {
+      contentRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [currentQuestionIndex]);
 
   // Mock data for questions
   // ![TODO] Replace with actual data fetching logic (questions from API) and Translate to English
@@ -204,26 +237,26 @@ const InteractiveImageScene: React.FC = () => {
         { id: 4, text: "", isTextField: true },
       ],
     },
-    // {
-    //   id: 4,
-    //   text: "What should you do if you are trapped under debris?",
-    //   choices: [
-    //     { id: 1, text: "Stay quiet and wait for help" },
-    //     { id: 2, text: "Try to move as much as possible" },
-    //     { id: 3, text: "Make noise to attract attention" },
-    //     { id: 4, text: "", isTextField: true },
-    //   ],
-    // },
-    // {
-    //   id: 5,
-    //   text: "What is the best way to stay informed during a disaster?",
-    //   choices: [
-    //     { id: 1, text: "Social media" },
-    //     { id: 2, text: "Local news channels" },
-    //     { id: 3, text: "Emergency alert systems" },
-    //     { id: 4, text: "", isTextField: true },
-    //   ],
-    // },
+    {
+      id: 4,
+      text: "What should you do if you are trapped under debris?",
+      choices: [
+        { id: 1, text: "Stay quiet and wait for help" },
+        { id: 2, text: "Try to move as much as possible" },
+        { id: 3, text: "Make noise to attract attention" },
+        { id: 4, text: "", isTextField: true },
+      ],
+    },
+    {
+      id: 5,
+      text: "What is the best way to stay informed during a disaster?",
+      choices: [
+        { id: 1, text: "Social media" },
+        { id: 2, text: "Local news channels" },
+        { id: 3, text: "Emergency alert systems" },
+        { id: 4, text: "", isTextField: true },
+      ],
+    },
   ];
 
   const currentQuestion = questions[currentQuestionIndex];
@@ -271,7 +304,7 @@ const InteractiveImageScene: React.FC = () => {
   return (
     <SceneContainer>
       <RainEffect />
-      <ContentWrapper>
+      <ContentWrapper ref={contentRef}>
         <Paper
           elevation={3}
           sx={{
@@ -285,12 +318,13 @@ const InteractiveImageScene: React.FC = () => {
           {/* Question Stepper/Timeline */}
           <Stepper
             activeStep={currentQuestionIndex}
-            alternativeLabel
+            // alternativeLabel
+            connector={<ColorLibConnector />}
             sx={{ mb: 4 }}
           >
             {questions.map((question, index) => (
               <Step key={question.id}>
-                <StepLabel>Question {index + 1}</StepLabel>
+                <StepLabel></StepLabel>
               </Step>
             ))}
           </Stepper>
@@ -357,11 +391,7 @@ const InteractiveImageScene: React.FC = () => {
                     }
                   >
                     <CardContent>
-                      <Typography
-                        variant="body1"
-                        align="center"
-                        sx={{ p: 0.5 }}
-                      >
+                      <Typography variant="body1" align="center">
                         {choice.text}
                       </Typography>
                     </CardContent>
