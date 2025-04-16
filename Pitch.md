@@ -14,10 +14,25 @@ Plug and Play:
 
 - Session entrainement pour le pitch: mercredi - vendredi
   - Avoir slide de prete pour Vendredi
-  - Simulation de pitch (on premise idealement)
-  - Video demo / GIF / Slide
+    - Simulation de pitch (on premise idealement)
+    - (Video demo) / GIF / Slide
 
 ## Pitch
 
 - Needs
 - Solution / Demo (while pitching the solution)
+
+## Technics
+
+- Stack:
+  - Backend:
+    - Python
+    - FastAPI
+    - Streamlit
+  - Frontend:
+    - React
+    - Vite
+
+## Place
+
+- E
