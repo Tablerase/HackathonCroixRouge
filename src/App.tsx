@@ -8,6 +8,7 @@ import RiskAssessmentScene from "./Components/RiskAssessmentScene";
 import InteractiveImageScene from "./Components/InteractiveImageScene";
 import ResultsScene from "./Components/ResultsScene";
 import { theme } from "./Components/theme";
+import { DraggableCards } from "./Components/DraggableCards";
 
 const App: React.FC = () => {
   const [userLocation, setUserLocation] = useState<{
@@ -71,6 +72,7 @@ const App: React.FC = () => {
               element={<InteractiveImageScene />}
             />
             <Route path="/results" element={<ResultsScene />} />
+            <Route path="/test" element={<DraggableCards />} />
           </Routes>
         </Container>
       </Router>

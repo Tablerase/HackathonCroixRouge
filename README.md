@@ -57,5 +57,7 @@ export default tseslint.config({
 
 Ideas:
 
+- https://www.windmill.dev/blog/react-draggable-component
+
 - https://uiverse.io/vinodjangid07/popular-owl-27
 - https://www.flaticon.com/free-animated-icon/recipe-book_6449689

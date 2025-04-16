@@ -322,7 +322,8 @@ const InteractiveImageScene: React.FC = () => {
             connector={<ColorLibConnector />}
             sx={{ mb: 4 }}
           >
-            {questions.map((question, index) => (
+            {/* {questions.map((question, index) => ( */}
+            {questions.map((question) => (
               <Step key={question.id}>
                 <StepLabel></StepLabel>
               </Step>
