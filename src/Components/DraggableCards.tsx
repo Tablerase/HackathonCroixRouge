@@ -92,7 +92,8 @@ export const DraggableCards = () => {
 
   const handleDrop = (e: React.DragEvent, targetCard: Card) => {
     e.preventDefault();
-    reorderCards(targetCard.id);
+    // Remove the call to reorderCards
+    // reorderCards(targetCard.id);
   };
 
   const handleDropZoneDrop = (e: React.DragEvent) => {
@@ -236,11 +237,25 @@ export const DraggableCards = () => {
       draggedCard.id === droppedCard.id
     ) {
       // If we're moving the dropped card back to the list
-      setCards([...cards, draggedCard]);
+      // Add the card back to the original list in its original position
+      const updatedCards = [...cards];
+      // Insert the card back at its original position (by id order)
+      const insertIndex = updatedCards.findIndex(
+        (card) => card.id > draggedCard.id
+      );
+      if (insertIndex === -1) {
+        updatedCards.push(draggedCard);
+      } else {
+        updatedCards.splice(insertIndex, 0, draggedCard);
+      }
+      setCards(updatedCards);
       setDroppedCard(null);
-    } else if (targetCardId !== null && draggedCard) {
-      reorderCards(targetCardId);
     }
+    // Remove the else if with reorderCards
+    // else if (targetCardId !== null && draggedCard) {
+    //   reorderCards(targetCardId);
+    // }
+
     console.debug(e);
 
     setDragging(false);
@@ -252,25 +267,25 @@ export const DraggableCards = () => {
   };
 
   // Function to reorder cards (used by both drag and touch handlers)
-  const reorderCards = (targetId: number) => {
-    if (!draggedCard) return;
+  // const reorderCards = (targetId: number) => {
+  //   if (!draggedCard) return;
 
-    const draggedCardIndex = cards.findIndex(
-      (card) => card.id === draggedCard.id
-    );
-    const targetCardIndex = cards.findIndex((card) => card.id === targetId);
+  //   const draggedCardIndex = cards.findIndex(
+  //     (card) => card.id === draggedCard.id
+  //   );
+  //   const targetCardIndex = cards.findIndex((card) => card.id === targetId);
 
-    if (
-      draggedCardIndex !== -1 &&
-      targetCardIndex !== -1 &&
-      draggedCardIndex !== targetCardIndex
-    ) {
-      const newCards = [...cards];
-      const [movedCard] = newCards.splice(draggedCardIndex, 1);
-      newCards.splice(targetCardIndex, 0, movedCard);
-      setCards(newCards);
-    }
-  };
+  //   if (
+  //     draggedCardIndex !== -1 &&
+  //     targetCardIndex !== -1 &&
+  //     draggedCardIndex !== targetCardIndex
+  //   ) {
+  //     const newCards = [...cards];
+  //     const [movedCard] = newCards.splice(draggedCardIndex, 1);
+  //     newCards.splice(targetCardIndex, 0, movedCard);
+  //     setCards(newCards);
+  //   }
+  // };
 
   return (
     <div style={{ display: "flex", gap: "20px", justifyContent: "center" }}>
@@ -365,7 +380,6 @@ export const DraggableCards = () => {
         onDrop={handleDraggableAreaDrop}
         style={{
           position: "fixed",
-          top: 0,
           left: 0,
           right: 0,
           bottom: 0,
@@ -374,66 +388,84 @@ export const DraggableCards = () => {
             ? "rgba(0, 123, 255, 0.1)"
             : "transparent",
           transition: "all 0.3s ease",
-          flexDirection: "row",
-          width: "100%",
           display: "flex",
           justifyContent: "center",
           alignItems: "flex-end",
           minHeight: "200px",
+          zIndex: 5,
         }}
       >
-        {cards.map((card, index) => {
-          const rotationAngle = card.id % 2 === 0 ? 5 : -5; // Rotate cards based on their ID
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            maxWidth: "100%",
+            overflow: "visible",
+            padding: "0 20px", // Add padding on sides to prevent edge-clipping
+          }}
+        >
+          {cards.map((card, index) => {
+            // Calculate rotation angles based on card position and total count
+            const totalCards = cards.length;
+            const middleIndex = (totalCards - 1) / 2;
+            const offset = index - middleIndex;
+            // Scale angle based on screen size
+            const angleScale = window.innerWidth < 768 ? 0.6 : 1; // Reduce angles on mobile
+            const rotationAngle = offset * (70 / totalCards) * angleScale;
 
-          return (
-            <div
-              key={card.id}
-              data-card-id={card.id}
-              draggable
-              onDragStart={(e) => handleDragStart(e, card)}
-              onDragOver={(e) => handleDragOver(e, card)}
-              onDrop={(e) => handleDrop(e, card)}
-              onDragEnd={handleDragEnd}
-              onDragEnter={handleDragEnter}
-              onTouchStart={(e) => handleTouchStart(e, card)}
-              onTouchMove={handleTouchMove}
-              onTouchEnd={handleTouchEnd}
-              style={{
-                padding: "20px",
-                backgroundColor:
-                  targetCardId === card.id && draggedCard?.id !== card.id
-                    ? "#f0f8ff"
-                    : draggedCard && draggedCard.id === card.id
-                    ? "#f0f0f0"
-                    : "#fff",
-                border:
-                  targetCardId === card.id && draggedCard?.id !== card.id
-                    ? "2px dashed #007bff"
-                    : "1px solid #ccc",
-                borderRadius: "5px",
-                cursor:
-                  droppedCard && droppedCard.id !== card.id
-                    ? "not-allowed"
-                    : "move",
-                // minHeight: "100px",
-                height: "400px",
-                width: "160px", // Fixed width for cards
-                marginBottom: "10px",
-                opacity: draggedCard && draggedCard.id === card.id ? 0.5 : 1,
-                touchAction: "none",
-                transform: `rotate(${rotationAngle}deg)`,
-                transition:
-                  "transform 0.3s ease, background-color 0.3s ease, border 0.3s ease",
-                margin: "0 -15px", // Make cards slightly overlap
-                position: "relative",
-                zIndex: index, // Stack cards with proper z-index
-                transformOrigin: "bottom center", // Rotate from bottom center
-              }}
-            >
-              {card.text}
-            </div>
-          );
-        })}
+            // Calculate horizontal positioning
+            const cardWidth = window.innerWidth < 768 ? 120 : 160; // Smaller cards on mobile
+            const overlapFactor = window.innerWidth < 768 ? -40 : -30; // Less overlap on mobile
+
+            return (
+              <div
+                key={card.id}
+                data-card-id={card.id}
+                draggable
+                onDragStart={(e) => handleDragStart(e, card)}
+                onDragOver={(e) => handleDragOver(e, card)}
+                onDrop={(e) => handleDrop(e, card)}
+                onDragEnd={handleDragEnd}
+                onDragEnter={handleDragEnter}
+                onTouchStart={(e) => handleTouchStart(e, card)}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={handleTouchEnd}
+                style={{
+                  padding: "20px",
+                  backgroundColor:
+                    targetCardId === card.id && draggedCard?.id !== card.id
+                      ? "#f0f8ff"
+                      : draggedCard && draggedCard.id === card.id
+                      ? "#f0f0f0"
+                      : "#fff",
+                  border:
+                    targetCardId === card.id && draggedCard?.id !== card.id
+                      ? "2px dashed #007bff"
+                      : "1px solid #ccc",
+                  borderRadius: "5px",
+                  cursor:
+                    droppedCard && droppedCard.id !== card.id
+                      ? "not-allowed"
+                      : "move",
+                  height: window.innerWidth < 768 ? "300px" : "400px",
+                  width: `${cardWidth}px`,
+                  marginBottom: "10px",
+                  opacity: draggedCard && draggedCard.id === card.id ? 0.5 : 1,
+                  touchAction: "none",
+                  transform: `rotate(${rotationAngle}deg)`,
+                  transition:
+                    "transform 0.3s ease, background-color 0.3s ease, border 0.3s ease",
+                  margin: `0 ${overlapFactor / 2}px`,
+                  position: "relative",
+                  zIndex: totalCards - Math.abs(offset), // Center cards have higher z-index
+                  transformOrigin: "bottom center",
+                }}
+              >
+                {card.text}
+              </div>
+            );
+          })}
+        </div>
       </div>
 
       {dragging && draggedCard && (
