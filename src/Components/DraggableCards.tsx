@@ -96,6 +96,7 @@ export const DraggableCards = () => {
   const handleDrop = (e: React.DragEvent, targetCard: Card) => {
     e.preventDefault();
     // Remove the call to reorderCards
+    console.debug("Dropped on card:", targetCard);
     // reorderCards(targetCard.id);
   };
 
@@ -344,6 +345,8 @@ export const DraggableCards = () => {
                 value={dropZoneText}
                 onChange={handleTextChange}
                 maxLength={dropZoneTextSize}
+                name="dropZoneText"
+                id="dropZoneText"
                 style={{
                   width: "100%",
                   height: "100px",
@@ -408,7 +411,11 @@ export const DraggableCards = () => {
                 backgroundColor:
                   draggedCard && draggedCard.id === droppedCard.id
                     ? "#f0f0f0"
-                    : "#fff",
+                    : undefined,
+                backgroundImage:
+                  draggedCard && draggedCard.id === droppedCard.id
+                    ? "none"
+                    : "linear-gradient(146deg, #FF512F, #DD2476)",
                 border: "1px solid #28a745",
                 borderRadius: "5px",
                 minHeight: "80px",
@@ -416,6 +423,14 @@ export const DraggableCards = () => {
                 opacity:
                   draggedCard && draggedCard.id === droppedCard.id ? 0.5 : 1,
                 touchAction: "none",
+                color:
+                  draggedCard && draggedCard.id === droppedCard.id
+                    ? "#000"
+                    : "#fff",
+                boxShadow:
+                  "rgba(0, 0, 0, 0.17) 0px -23px 25px 0px inset, rgba(0, 0, 0, 0.15) 0px -36px 30px 0px inset, rgba(0, 0, 0, 0.1) 0px -79px 40px 0px inset, rgba(0, 0, 0, 0.06) 0px 2px 1px, rgba(0, 0, 0, 0.09) 0px 4px 2px, rgba(0, 0, 0, 0.09) 0px 8px 4px, rgba(0, 0, 0, 0.09) 0px 16px 8px, rgba(0, 0, 0, 0.09) 0px 32px 16px",
+                transition:
+                  "transform 0.3s ease, background-color 0.3s ease, border 0.3s ease",
               }}
             >
               {droppedCard.text}
@@ -496,7 +511,12 @@ export const DraggableCards = () => {
                       ? "#f0f8ff"
                       : draggedCard && draggedCard.id === card.id
                       ? "#f0f0f0"
-                      : "#fff",
+                      : undefined,
+                  backgroundImage:
+                    (targetCardId === card.id && draggedCard?.id !== card.id) ||
+                    (draggedCard && draggedCard.id === card.id)
+                      ? "none"
+                      : "linear-gradient(146deg, #FF512F, #DD2476)",
                   border:
                     targetCardId === card.id && draggedCard?.id !== card.id
                       ? "2px dashed #007bff"
@@ -520,6 +540,13 @@ export const DraggableCards = () => {
                   transformOrigin: "bottom center",
                   fontSize: fontSize,
                   textAlign: "center",
+                  color:
+                    (targetCardId === card.id && draggedCard?.id !== card.id) ||
+                    (draggedCard && draggedCard.id === card.id)
+                      ? "#000"
+                      : "#fff",
+                  boxShadow:
+                    "rgba(0, 0, 0, 0.17) 0px -23px 25px 0px inset, rgba(0, 0, 0, 0.15) 0px -36px 30px 0px inset, rgba(0, 0, 0, 0.1) 0px -79px 40px 0px inset, rgba(0, 0, 0, 0.06) 0px 2px 1px, rgba(0, 0, 0, 0.09) 0px 4px 2px, rgba(0, 0, 0, 0.09) 0px 8px 4px, rgba(0, 0, 0, 0.09) 0px 16px 8px, rgba(0, 0, 0, 0.09) 0px 32px 16px",
                 }}
               >
                 {card.text}
