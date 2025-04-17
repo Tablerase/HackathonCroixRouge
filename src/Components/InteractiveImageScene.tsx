@@ -118,6 +118,7 @@ interface DraggableCardsWrapperProps {
   customAnswer: string;
   setCustomAnswer: (text: string) => void;
   onCustomAnswerSubmit: () => void;
+  containerRef?: React.RefObject<HTMLDivElement | null>;
 }
 
 const DraggableCardsWrapper: React.FC<DraggableCardsWrapperProps> = ({
@@ -128,6 +129,7 @@ const DraggableCardsWrapper: React.FC<DraggableCardsWrapperProps> = ({
   customAnswer,
   setCustomAnswer,
   onCustomAnswerSubmit,
+  containerRef,
 }) => {
   // Convert choices to cards format
   const cards = choices
@@ -157,6 +159,7 @@ const DraggableCardsWrapper: React.FC<DraggableCardsWrapperProps> = ({
         }
         onCustomTextSubmit={onCustomAnswerSubmit}
         selectedAnswer={selectedAnswer}
+        containerRef={containerRef}
       />
     </div>
   );
@@ -396,6 +399,7 @@ const InteractiveImageScene: React.FC = () => {
               customAnswer={customAnswer}
               setCustomAnswer={setCustomAnswer}
               onCustomAnswerSubmit={handleCustomAnswerSubmit}
+              containerRef={contentRef}
             />
           </Box>
 

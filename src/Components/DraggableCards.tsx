@@ -17,8 +17,43 @@ interface DraggableCardsProps {
   customTextValue?: string;
   onCustomTextChange?: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
   onCustomTextSubmit?: () => void;
+  containerRef?: React.RefObject<HTMLDivElement | null>;
   selectedAnswer?: string;
 }
+
+/**
+ * ! TODO: Fix drag preview pb on mobile (offset issue), Handle text input (no change at input),
+ * ! Mobile drop zone not validating the question
+ */
+
+// Helper function to calculate position including scrolling and container offsets
+// const calculateDragPosition = (
+//   e: React.DragEvent | React.TouchEvent | Touch,
+//   containerRef:
+//     | React.RefObject<HTMLDivElement | null>
+//     | React.RefObject<HTMLDivElement>
+// ): Position => {
+//   const clientX = "clientX" in e ? e.clientX : e.touches[0].clientX;
+//   const clientY = "clientY" in e ? e.clientY : e.touches[0].clientY;
+
+//   console.log("Touch", clientX, clientY);
+//   // Get container position if available
+//   if (containerRef && containerRef.current) {
+//     const containerRect = containerRef.current.getBoundingClientRect();
+//     console.log(containerRect);
+//     // Calculate position relative to the container
+//     const x = clientX - containerRect.left + containerRef.current.scrollLeft;
+//     const y = clientY - containerRect.top + containerRef.current.scrollTop;
+//     console.log("Calculated Touch", x, y);
+//     return {
+//       x: clientX - containerRect.left + containerRef.current.scrollLeft,
+//       y: clientY - containerRect.top + containerRef.current.scrollTop,
+//     };
+//   }
+
+//   // Fallback if container ref not available
+//   return { x: clientX, y: clientY };
+// };
 
 export const DraggableCards = ({
   initialCards = [],
@@ -70,7 +105,14 @@ export const DraggableCards = ({
 
     setDragging(true);
     setDraggedCard(card);
-    setDragPosition({ x: e.clientX, y: e.clientY });
+
+    // Use pageX and pageY instead of clientX and clientY to account for scroll
+    const position = {
+      x: e.pageX,
+      y: e.pageY,
+    };
+    setDragPosition(position);
+
     e.dataTransfer.effectAllowed = "move";
     e.dataTransfer.setData("text/plain", card.id.toString());
 
@@ -82,7 +124,11 @@ export const DraggableCards = ({
   const handleDragOver = (e: React.DragEvent, targetCard: Card) => {
     e.preventDefault();
     e.dataTransfer.dropEffect = "move";
-    setDragPosition({ x: e.clientX, y: e.clientY });
+    const position = {
+      x: e.pageX,
+      y: e.pageY,
+    };
+    setDragPosition(position);
     setTargetCardId(targetCard.id);
     setIsOverDropZone(false);
   };
@@ -90,7 +136,11 @@ export const DraggableCards = ({
   const handleDropZoneDragOver = (e: React.DragEvent) => {
     e.preventDefault();
     e.dataTransfer.dropEffect = "move";
-    setDragPosition({ x: e.clientX, y: e.clientY });
+    const position = {
+      x: e.pageX,
+      y: e.pageY,
+    };
+    setDragPosition(position);
     setTargetCardId(null);
     setIsOverDropZone(true);
     setIsOverDraggableArea(false);
@@ -99,7 +149,11 @@ export const DraggableCards = ({
   const handleDraggableAreaDragOver = (e: React.DragEvent) => {
     e.preventDefault();
     e.dataTransfer.dropEffect = "move";
-    setDragPosition({ x: e.clientX, y: e.clientY });
+    const position = {
+      x: e.pageX,
+      y: e.pageY,
+    };
+    setDragPosition(position);
     setTargetCardId(null);
     setIsOverDropZone(false);
     setIsOverDraggableArea(true);
@@ -107,7 +161,7 @@ export const DraggableCards = ({
 
   const handleDrop = (e: React.DragEvent, targetCard: Card) => {
     e.preventDefault();
-    // Remove the call to reorderCards
+    console.debug("selectedAnswer", selectedAnswer);
     console.debug("Dropped on card:", targetCard);
     // reorderCards(targetCard.id);
   };
@@ -193,7 +247,11 @@ export const DraggableCards = ({
     const touch = e.touches[0];
     setDragging(true);
     setDraggedCard(card);
-    const position = { x: touch.clientX, y: touch.clientY };
+    // Use pageX and pageY instead of clientX and clientY
+    const position = {
+      x: touch.pageX,
+      y: touch.pageY,
+    };
     setDragPosition(position);
     setTouchStartPosition(position);
     console.debug(touchStartPosition);
@@ -203,7 +261,11 @@ export const DraggableCards = ({
     if (!dragging || !draggedCard) return;
 
     const touch = e.touches[0];
-    setDragPosition({ x: touch.clientX, y: touch.clientY });
+    const position = {
+      x: touch.pageX,
+      y: touch.pageY,
+    };
+    setDragPosition(position);
 
     // Find which card we're over based on position
     if (containerRef.current) {
@@ -563,16 +625,16 @@ export const DraggableCards = ({
                     (draggedCard && draggedCard.id === card.id)
                       ? "none"
                       : "linear-gradient(146deg, #FF512F, #DD2476)",
-                  border:
-                    targetCardId === card.id && draggedCard?.id !== card.id
-                      ? "2px dashed #007bff"
-                      : "1px solid #ccc",
+                  // border:
+                  //   targetCardId === card.id && draggedCard?.id !== card.id
+                  //     ? "2px dashed #007bff"
+                  //     : "1px solid #ccc",
                   borderRadius: "5px",
                   cursor:
                     droppedCard && droppedCard.id !== card.id
                       ? "not-allowed"
                       : "move",
-                  height: window.innerWidth < 768 ? "300px" : "400px",
+                  height: window.innerWidth < 768 ? "300px" : "350px",
                   width: `${cardWidth}px`,
                   marginBottom: "10px",
                   opacity: draggedCard && draggedCard.id === card.id ? 0.5 : 1,
@@ -602,23 +664,33 @@ export const DraggableCards = ({
         </div>
       </div>
 
-      {dragging && draggedCard && (
+      {dragging && draggedCard && window.innerWidth < 768 && (
         <div
           style={{
             position: "fixed",
-            left: `${dragPosition.x}px`,
-            top: `${dragPosition.y}px`,
+            top: dragPosition.y,
+            left: dragPosition.x,
             transform: "translate(-50%, -50%)",
-            backgroundColor: "#fff",
-            padding: "15px",
+            backgroundImage: "linear-gradient(146deg, #FF512F, #DD2476)",
+            padding: "10px",
             border: "1px solid #ccc",
             borderRadius: "5px",
-            boxShadow: "0 2px 10px rgba(0,0,0,0.2)",
+            boxShadow: "0 4px 8px rgba(0,0,0,0.3)",
             pointerEvents: "none",
-            zIndex: 1000,
+            zIndex: 2000,
+            width: "120px",
+            maxHeight: "80px",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            opacity: 0.9,
+            color: "#fff",
+            fontSize: "12px",
+            textAlign: "center",
           }}
         >
-          {draggedCard.text}
+          {draggedCard.text.length > 30
+            ? draggedCard.text.substring(0, 30) + "..."
+            : draggedCard.text}
         </div>
       )}
     </div>
