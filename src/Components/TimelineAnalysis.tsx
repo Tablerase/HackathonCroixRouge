@@ -41,9 +41,10 @@ const TimelineAnalysis: React.FC<TimelineAnalysisProps> = ({
         const encodedTimeline = encodeURIComponent(JSON.stringify(timeline));
 
         // Make the API request
-        const response = await axios.get(`/api/timeline/analyze/`, {
-          params: { timeline: encodedTimeline },
-        });
+        const response = await axios.post(
+          `/api/timeline/analyze/`,
+          encodedTimeline
+        );
 
         // Extract the data directly from axios response
         const data = response.data;

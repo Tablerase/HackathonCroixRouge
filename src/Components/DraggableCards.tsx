@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 
 interface Card {
   id: number;
@@ -26,10 +26,22 @@ export const DraggableCards = () => {
   const draggableAreaRef = useRef<HTMLDivElement>(null);
 
   const [cards, setCards] = useState<Card[]>([
-    { id: 1, text: "Card 1" },
-    { id: 2, text: "Card 2" },
-    { id: 3, text: "Card 3" },
-    { id: 4, text: "Card 4" },
+    {
+      id: 1,
+      text: "Card 1 - Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+    },
+    {
+      id: 2,
+      text: "Card 2 - Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+    },
+    {
+      id: 3,
+      text: "Card 3 - Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+    },
+    {
+      id: 4,
+      text: "Card 4 - Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+    },
   ]);
 
   // For desktop - Drag events
@@ -144,6 +156,7 @@ export const DraggableCards = () => {
     const position = { x: touch.clientX, y: touch.clientY };
     setDragPosition(position);
     setTouchStartPosition(position);
+    console.debug(touchStartPosition);
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
@@ -228,6 +241,7 @@ export const DraggableCards = () => {
     } else if (targetCardId !== null && draggedCard) {
       reorderCards(targetCardId);
     }
+    console.debug(e);
 
     setDragging(false);
     setDraggedCard(null);
@@ -259,7 +273,7 @@ export const DraggableCards = () => {
   };
 
   return (
-    <div style={{ display: "flex", gap: "20px" }}>
+    <div style={{ display: "flex", gap: "20px", justifyContent: "center" }}>
       <div
         ref={containerRef}
         style={{
@@ -267,7 +281,8 @@ export const DraggableCards = () => {
           flexDirection: "column",
           gap: "10px",
           padding: "20px",
-          width: "60%",
+          width: "100%",
+          alignItems: "center",
         }}
       >
         {/* Drop Zone - Only accepts one card */}
@@ -284,10 +299,13 @@ export const DraggableCards = () => {
               ? "rgba(40, 167, 69, 0.1)"
               : "#f8f9fa",
             minHeight: "150px",
+            width: "60%",
             display: "flex",
             flexDirection: "column",
             gap: "10px",
             transition: "all 0.3s ease",
+            zIndex: 10, // Ensure drop zone is above the draggable area
+            position: "relative", // Make sure z-index works
           }}
         >
           <h3>Drop Zone (Single Card)</h3>
@@ -338,80 +356,84 @@ export const DraggableCards = () => {
             </div>
           )}
         </div>
+      </div>
 
-        {/* Draggable cards area */}
-        <div
-          ref={draggableAreaRef}
-          onDragOver={handleDraggableAreaDragOver}
-          onDrop={handleDraggableAreaDrop}
-          style={{
-            borderRadius: "8px",
-            padding: "10px",
-            backgroundColor: isOverDraggableArea
-              ? "rgba(0, 123, 255, 0.1)"
-              : "transparent",
-            transition: "all 0.3s ease",
-            flexDirection: "row",
-            width: "80vw",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            minHeight: "200px",
-            position: "relative",
-          }}
-        >
-          {cards.map((card, index) => {
-            const rotationAngle = card.id % 2 === 0 ? 5 : -5; // Rotate cards based on their ID
+      {/* Make the entire area (except drop zone) a draggable area */}
+      <div
+        ref={draggableAreaRef}
+        onDragOver={handleDraggableAreaDragOver}
+        onDrop={handleDraggableAreaDrop}
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          padding: "10px",
+          backgroundColor: isOverDraggableArea
+            ? "rgba(0, 123, 255, 0.1)"
+            : "transparent",
+          transition: "all 0.3s ease",
+          flexDirection: "row",
+          width: "100%",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "flex-end",
+          minHeight: "200px",
+        }}
+      >
+        {cards.map((card, index) => {
+          const rotationAngle = card.id % 2 === 0 ? 5 : -5; // Rotate cards based on their ID
 
-            return (
-              <div
-                key={card.id}
-                data-card-id={card.id}
-                draggable
-                onDragStart={(e) => handleDragStart(e, card)}
-                onDragOver={(e) => handleDragOver(e, card)}
-                onDrop={(e) => handleDrop(e, card)}
-                onDragEnd={handleDragEnd}
-                onDragEnter={handleDragEnter}
-                onTouchStart={(e) => handleTouchStart(e, card)}
-                onTouchMove={handleTouchMove}
-                onTouchEnd={handleTouchEnd}
-                style={{
-                  padding: "20px",
-                  backgroundColor:
-                    targetCardId === card.id && draggedCard?.id !== card.id
-                      ? "#f0f8ff"
-                      : draggedCard && draggedCard.id === card.id
-                      ? "#f0f0f0"
-                      : "#fff",
-                  border:
-                    targetCardId === card.id && draggedCard?.id !== card.id
-                      ? "2px dashed #007bff"
-                      : "1px solid #ccc",
-                  borderRadius: "5px",
-                  cursor:
-                    droppedCard && droppedCard.id !== card.id
-                      ? "not-allowed"
-                      : "move",
-                  minHeight: "100px",
-                  width: "140px", // Fixed width for cards
-                  marginBottom: "10px",
-                  opacity: draggedCard && draggedCard.id === card.id ? 0.5 : 1,
-                  touchAction: "none",
-                  transform: `rotate(${rotationAngle}deg)`,
-                  transition:
-                    "transform 0.3s ease, background-color 0.3s ease, border 0.3s ease",
-                  margin: "0 -15px", // Make cards slightly overlap
-                  position: "relative",
-                  zIndex: index, // Stack cards with proper z-index
-                  transformOrigin: "bottom center", // Rotate from bottom center
-                }}
-              >
-                {card.text}
-              </div>
-            );
-          })}
-        </div>
+          return (
+            <div
+              key={card.id}
+              data-card-id={card.id}
+              draggable
+              onDragStart={(e) => handleDragStart(e, card)}
+              onDragOver={(e) => handleDragOver(e, card)}
+              onDrop={(e) => handleDrop(e, card)}
+              onDragEnd={handleDragEnd}
+              onDragEnter={handleDragEnter}
+              onTouchStart={(e) => handleTouchStart(e, card)}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
+              style={{
+                padding: "20px",
+                backgroundColor:
+                  targetCardId === card.id && draggedCard?.id !== card.id
+                    ? "#f0f8ff"
+                    : draggedCard && draggedCard.id === card.id
+                    ? "#f0f0f0"
+                    : "#fff",
+                border:
+                  targetCardId === card.id && draggedCard?.id !== card.id
+                    ? "2px dashed #007bff"
+                    : "1px solid #ccc",
+                borderRadius: "5px",
+                cursor:
+                  droppedCard && droppedCard.id !== card.id
+                    ? "not-allowed"
+                    : "move",
+                // minHeight: "100px",
+                height: "400px",
+                width: "160px", // Fixed width for cards
+                marginBottom: "10px",
+                opacity: draggedCard && draggedCard.id === card.id ? 0.5 : 1,
+                touchAction: "none",
+                transform: `rotate(${rotationAngle}deg)`,
+                transition:
+                  "transform 0.3s ease, background-color 0.3s ease, border 0.3s ease",
+                margin: "0 -15px", // Make cards slightly overlap
+                position: "relative",
+                zIndex: index, // Stack cards with proper z-index
+                transformOrigin: "bottom center", // Rotate from bottom center
+              }}
+            >
+              {card.text}
+            </div>
+          );
+        })}
       </div>
 
       {dragging && draggedCard && (
