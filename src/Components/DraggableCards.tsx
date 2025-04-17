@@ -10,7 +10,25 @@ interface Position {
   y: number;
 }
 
-export const DraggableCards = () => {
+interface DraggableCardsProps {
+  initialCards?: Card[];
+  onCardDrop?: (card: Card) => void;
+  customText?: boolean;
+  customTextValue?: string;
+  onCustomTextChange?: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+  onCustomTextSubmit?: () => void;
+  selectedAnswer?: string;
+}
+
+export const DraggableCards = ({
+  initialCards = [],
+  onCardDrop,
+  customText = true,
+  customTextValue = "",
+  onCustomTextChange,
+  onCustomTextSubmit,
+  selectedAnswer,
+}: DraggableCardsProps) => {
   const [dragging, setDragging] = useState(false);
   const [draggedCard, setDraggedCard] = useState<Card | null>(null);
   const [dragPosition, setDragPosition] = useState<Position>({ x: 0, y: 0 });
@@ -21,32 +39,26 @@ export const DraggableCards = () => {
   const [isOverDropZone, setIsOverDropZone] = useState(false);
   const [isOverDraggableArea, setIsOverDraggableArea] = useState(false);
   const [droppedCard, setDroppedCard] = useState<Card | null>(null);
-  const [dropZoneText, setDropZoneText] = useState<string>("");
   const dropZoneTextSize = 150; // Max length of the text in the drop zone
   const containerRef = useRef<HTMLDivElement>(null);
   const dropZoneRef = useRef<HTMLDivElement>(null);
   const draggableAreaRef = useRef<HTMLDivElement>(null);
 
-  const [cards, setCards] = useState<Card[]>([
-    {
-      id: 1,
-      text: "Card 1 - Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-    },
-    {
-      id: 2,
-      text: "Card 2 - Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-    },
-    {
-      id: 3,
-      text: "Card 3 - Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
-    },
-    // {
-    //   id: 4,
-    //   text: "Card 4 - Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-    // },
-  ]);
-  // TODO: Make text field inside the drop zone editable when no card is dropped
+  const [cards, setCards] = useState<Card[]>(
+    initialCards.length > 0
+      ? initialCards
+      : [
+          {
+            id: 1,
+            text: "Card 1 - Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+          },
+          // ... your default cards
+        ]
+  );
 
+  const [dropZoneText, setDropZoneText] = useState<string>(
+    customTextValue || ""
+  );
   // For desktop - Drag events
   const handleDragStart = (e: React.DragEvent, card: Card) => {
     // If there's a card in the drop zone and we're trying to drag a card from the list
@@ -111,11 +123,34 @@ export const DraggableCards = () => {
 
       // Remove the card from the original list
       setCards(cards.filter((card) => card.id !== draggedCard.id));
+
+      // Call the callback if provided
+      if (onCardDrop) {
+        onCardDrop(draggedCard);
+      }
     }
 
     setDragging(false);
     setDraggedCard(null);
     setIsOverDropZone(false);
+  };
+
+  // Use the provided handlers if they exist
+  const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    if (onCustomTextChange) {
+      onCustomTextChange(e);
+    } else {
+      setDropZoneText(e.target.value);
+    }
+  };
+
+  const handleTextSubmit = () => {
+    if (onCustomTextSubmit) {
+      onCustomTextSubmit();
+    } else {
+      console.log("Submitted text:", dropZoneText);
+      setDropZoneText(""); // Clear the text after submit
+    }
   };
 
   const handleDraggableAreaDrop = (e: React.DragEvent) => {
@@ -269,15 +304,15 @@ export const DraggableCards = () => {
     setIsOverDraggableArea(false);
   };
 
-  const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setDropZoneText(e.target.value);
-  };
+  // const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+  //   setDropZoneText(e.target.value);
+  // };
 
-  const handleTextSubmit = () => {
-    // Add your submit logic here
-    console.log("Submitted text:", dropZoneText);
-    setDropZoneText(""); // Clear the text after submit
-  };
+  // const handleTextSubmit = () => {
+  //   // Add your submit logic here
+  //   console.log("Submitted text:", dropZoneText);
+  //   setDropZoneText(""); // Clear the text after submit
+  // };
 
   // Function to reorder cards (used by both drag and touch handlers)
   // const reorderCards = (targetId: number) => {
@@ -299,9 +334,21 @@ export const DraggableCards = () => {
   //     setCards(newCards);
   //   }
   // };
+  // Font size adjustment
+  const fontSize = window.innerWidth < 768 ? "12px" : "18px"; // Smaller font on mobile
 
   return (
-    <div style={{ display: "flex", gap: "20px", justifyContent: "center" }}>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        gap: "20px",
+        justifyContent: "center",
+        minHeight: "50vh", // Minimum height for the container
+        position: "relative", // Make parent relative for positioning
+        paddingBottom: "220px", // Add padding to prevent overlap with cards
+      }}
+    >
       <div
         ref={containerRef}
         style={{
@@ -327,18 +374,21 @@ export const DraggableCards = () => {
               ? "rgba(40, 167, 69, 0.1)"
               : "#f8f9fa",
             minHeight: "150px",
+            maxHeight: "250px", // Limit maximum height
             width: "60%",
             display: "flex",
             flexDirection: "column",
             gap: "10px",
             transition: "all 0.3s ease",
-            zIndex: 10, // Ensure drop zone is above the draggable area
-            position: "relative", // Make sure z-index works
+            zIndex: 10,
+            position: "relative",
+            overflow: "auto", // Add scrolling if content is too large
+            marginBottom: "30px", // Add explicit margin at the bottom
+            fontSize: fontSize,
           }}
         >
-          {/* <h3 style={{ textAlign: "center" }}>Drop Zone</h3> */}
-
-          {!droppedCard && !isOverDropZone && (
+          {/* Rest of the drop zone content remains the same */}
+          {!droppedCard && !isOverDropZone && customText && (
             <div style={{ position: "relative", width: "100%" }}>
               <textarea
                 placeholder="Enter your text here or drag a card..."
@@ -355,7 +405,6 @@ export const DraggableCards = () => {
                   border: "1px solid #ced4da",
                   borderRadius: "4px",
                   resize: "none",
-                  fontSize: "16px",
                   fontFamily: "inherit",
                 }}
               />
@@ -387,7 +436,6 @@ export const DraggableCards = () => {
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    fontSize: "16px",
                   }}
                 >
                   ➤
@@ -462,8 +510,9 @@ export const DraggableCards = () => {
           display: "flex",
           justifyContent: "center",
           alignItems: "flex-end",
-          minHeight: "200px",
+          height: "200px", // Fixed height instead of minHeight
           zIndex: 5,
+          borderTop: "1px solid #e0e0e0", // Optional visual separator
         }}
       >
         <div
@@ -487,9 +536,6 @@ export const DraggableCards = () => {
             // Calculate horizontal positioning
             const cardWidth = window.innerWidth < 768 ? 120 : 160; // Smaller cards on mobile
             const overlapFactor = window.innerWidth < 768 ? -40 : -30; // Less overlap on mobile
-
-            // Font size adjustment
-            const fontSize = window.innerWidth < 768 ? "12px" : "18px"; // Smaller font on mobile
 
             return (
               <div

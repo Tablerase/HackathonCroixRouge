@@ -2,11 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import {
   Box,
   Typography,
-  Card,
-  CardContent,
-  TextField,
   Paper,
-  Grid,
   Stepper,
   Step,
   StepLabel,
@@ -17,6 +13,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { styled } from "@mui/material/styles";
 import "./ImageScene.css";
+import { DraggableCards } from "./DraggableCards";
 
 const SceneContainer = styled("div")({
   position: "absolute",
@@ -112,6 +109,58 @@ interface Question {
   text: string;
   choices: AnswerChoice[];
 }
+
+interface DraggableCardsWrapperProps {
+  choices: AnswerChoice[];
+  questionId: number;
+  onAnswerSelect: (questionId: number, answerText: string) => void;
+  selectedAnswer?: string;
+  customAnswer: string;
+  setCustomAnswer: (text: string) => void;
+  onCustomAnswerSubmit: () => void;
+}
+
+const DraggableCardsWrapper: React.FC<DraggableCardsWrapperProps> = ({
+  choices,
+  questionId,
+  onAnswerSelect,
+  selectedAnswer,
+  customAnswer,
+  setCustomAnswer,
+  onCustomAnswerSubmit,
+}) => {
+  // Convert choices to cards format
+  const cards = choices
+    .filter((choice) => !choice.isTextField)
+    .map((choice) => ({
+      id: choice.id,
+      text: choice.text,
+    }));
+
+  // Handle card drop
+  const handleCardDrop = (card: { id: number; text: string }) => {
+    onAnswerSelect(questionId, card.text);
+  };
+
+  // Check if custom text field is needed
+  const hasTextField = choices.some((choice) => choice.isTextField);
+
+  return (
+    <div style={{ width: "100%" }}>
+      <DraggableCards
+        initialCards={cards}
+        onCardDrop={handleCardDrop}
+        customText={hasTextField}
+        customTextValue={customAnswer}
+        onCustomTextChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+          setCustomAnswer(e.target.value)
+        }
+        onCustomTextSubmit={onCustomAnswerSubmit}
+        selectedAnswer={selectedAnswer}
+      />
+    </div>
+  );
+};
 
 const RainEffect = () => {
   useEffect(() => {
@@ -338,69 +387,17 @@ const InteractiveImageScene: React.FC = () => {
           </Box>
 
           {/* Answer Choices */}
-          <Grid container spacing={2} justifyContent="center">
-            {currentQuestion.choices.map((choice) => (
-              <Grid key={choice.id}>
-                {choice.isTextField ? (
-                  <Card
-                    sx={{
-                      height: "100%",
-                      display: "flex",
-                      flexDirection: "column",
-                      p: 2,
-                    }}
-                  >
-                    <CardContent sx={{ flexGrow: 1 }}>
-                      <Typography variant="subtitle1" gutterBottom>
-                        Autre réponse :
-                      </Typography>
-                      <TextField
-                        fullWidth
-                        multiline
-                        rows={3}
-                        variant="outlined"
-                        placeholder="Entrez votre réponse ici..."
-                        value={customAnswer}
-                        onChange={(e) => setCustomAnswer(e.target.value)}
-                      />
-                    </CardContent>
-                    <Box sx={{ p: 2, pt: 0 }}>
-                      <Button
-                        variant="contained"
-                        fullWidth
-                        onClick={handleCustomAnswerSubmit}
-                        disabled={!customAnswer.trim()}
-                      >
-                        Soumettre
-                      </Button>
-                    </Box>
-                  </Card>
-                ) : (
-                  <Card
-                    sx={{
-                      height: "100%",
-                      cursor: "pointer",
-                      transition: "all 0.2s",
-                      "&:hover": { transform: "scale(1.02)", boxShadow: 3 },
-                      bgcolor:
-                        answers[currentQuestion.id] === choice.text
-                          ? "primary.light"
-                          : "background.paper",
-                    }}
-                    onClick={() =>
-                      handleAnswerSelect(currentQuestion.id, choice.text)
-                    }
-                  >
-                    <CardContent>
-                      <Typography variant="body1" align="center">
-                        {choice.text}
-                      </Typography>
-                    </CardContent>
-                  </Card>
-                )}
-              </Grid>
-            ))}
-          </Grid>
+          <Box sx={{ width: "100%", mb: 2 }}>
+            <DraggableCardsWrapper
+              choices={currentQuestion.choices}
+              questionId={currentQuestion.id}
+              onAnswerSelect={handleAnswerSelect}
+              selectedAnswer={answers[currentQuestion.id]}
+              customAnswer={customAnswer}
+              setCustomAnswer={setCustomAnswer}
+              onCustomAnswerSubmit={handleCustomAnswerSubmit}
+            />
+          </Box>
 
           {/* Navigation */}
           <Box sx={{ display: "flex", justifyContent: "space-between", mt: 4 }}>
