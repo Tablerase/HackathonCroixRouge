@@ -38,10 +38,10 @@ export const DraggableCards = () => {
       id: 3,
       text: "Card 3 - Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
     },
-    {
-      id: 4,
-      text: "Card 4 - Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-    },
+    // {
+    //   id: 4,
+    //   text: "Card 4 - Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+    // },
   ]);
 
   // For desktop - Drag events
@@ -161,7 +161,6 @@ export const DraggableCards = () => {
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
-    e.preventDefault(); // Prevent scrolling while dragging
     if (!dragging || !draggedCard) return;
 
     const touch = e.touches[0];
@@ -417,6 +416,9 @@ export const DraggableCards = () => {
             const cardWidth = window.innerWidth < 768 ? 120 : 160; // Smaller cards on mobile
             const overlapFactor = window.innerWidth < 768 ? -40 : -30; // Less overlap on mobile
 
+            // Font size adjustment
+            const fontSize = window.innerWidth < 768 ? "12px" : "18px"; // Smaller font on mobile
+
             return (
               <div
                 key={card.id}
@@ -459,6 +461,8 @@ export const DraggableCards = () => {
                   position: "relative",
                   zIndex: totalCards - Math.abs(offset), // Center cards have higher z-index
                   transformOrigin: "bottom center",
+                  fontSize: fontSize,
+                  textAlign: "center",
                 }}
               >
                 {card.text}
