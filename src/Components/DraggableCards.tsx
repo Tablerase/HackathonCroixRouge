@@ -21,6 +21,8 @@ export const DraggableCards = () => {
   const [isOverDropZone, setIsOverDropZone] = useState(false);
   const [isOverDraggableArea, setIsOverDraggableArea] = useState(false);
   const [droppedCard, setDroppedCard] = useState<Card | null>(null);
+  const [dropZoneText, setDropZoneText] = useState<string>("");
+  const dropZoneTextSize = 150; // Max length of the text in the drop zone
   const containerRef = useRef<HTMLDivElement>(null);
   const dropZoneRef = useRef<HTMLDivElement>(null);
   const draggableAreaRef = useRef<HTMLDivElement>(null);
@@ -43,6 +45,7 @@ export const DraggableCards = () => {
     //   text: "Card 4 - Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
     // },
   ]);
+  // TODO: Make text field inside the drop zone editable when no card is dropped
 
   // For desktop - Drag events
   const handleDragStart = (e: React.DragEvent, card: Card) => {
@@ -265,6 +268,16 @@ export const DraggableCards = () => {
     setIsOverDraggableArea(false);
   };
 
+  const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setDropZoneText(e.target.value);
+  };
+
+  const handleTextSubmit = () => {
+    // Add your submit logic here
+    console.log("Submitted text:", dropZoneText);
+    setDropZoneText(""); // Clear the text after submit
+  };
+
   // Function to reorder cards (used by both drag and touch handlers)
   // const reorderCards = (targetId: number) => {
   //   if (!draggedCard) return;
@@ -322,17 +335,61 @@ export const DraggableCards = () => {
             position: "relative", // Make sure z-index works
           }}
         >
-          <h3>Drop Zone (Single Card)</h3>
+          {/* <h3 style={{ textAlign: "center" }}>Drop Zone</h3> */}
 
           {!droppedCard && !isOverDropZone && (
-            <div
-              style={{
-                color: "#6c757d",
-                textAlign: "center",
-                marginTop: "20px",
-              }}
-            >
-              Drag a card here
+            <div style={{ position: "relative", width: "100%" }}>
+              <textarea
+                placeholder="Enter your text here or drag a card..."
+                value={dropZoneText}
+                onChange={handleTextChange}
+                maxLength={dropZoneTextSize}
+                style={{
+                  width: "100%",
+                  height: "100px",
+                  padding: "10px",
+                  paddingBottom: "30px", // Add space at the bottom for the button
+                  border: "1px solid #ced4da",
+                  borderRadius: "4px",
+                  resize: "none",
+                  fontSize: "16px",
+                  fontFamily: "inherit",
+                }}
+              />
+              <div
+                style={{
+                  position: "absolute",
+                  bottom: "8px",
+                  left: "10px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  width: "calc(100% - 20px)",
+                }}
+              >
+                <small style={{ color: "#6c757d" }}>
+                  {dropZoneText.length}/{dropZoneTextSize}
+                </small>
+                <button
+                  onClick={handleTextSubmit}
+                  disabled={!dropZoneText.trim()}
+                  style={{
+                    background: dropZoneText.trim() ? "#007bff" : "#e9ecef",
+                    color: dropZoneText.trim() ? "white" : "#6c757d",
+                    border: "none",
+                    borderRadius: "50%",
+                    width: "32px",
+                    height: "32px",
+                    cursor: dropZoneText.trim() ? "pointer" : "default",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: "16px",
+                  }}
+                >
+                  ➤
+                </button>
+              </div>
             </div>
           )}
 
