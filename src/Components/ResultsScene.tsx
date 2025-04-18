@@ -57,7 +57,7 @@ const ResultsScene: React.FC = () => {
             <ListItem key={question.id} divider>
               <ListItemText
                 primary={question.text}
-                secondary={answers[question.id] || "Not answered"}
+                secondary={answers[question.id].text || "Not answered"}
                 primaryTypographyProps={{ fontWeight: "bold" }}
               />
             </ListItem>
