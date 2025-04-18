@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, use } from "react";
+import { useState, useRef } from "react";
 
 interface Card {
   id: number;
@@ -18,42 +18,8 @@ interface DraggableCardsProps {
   onCustomTextChange?: (value: string) => void;
   onCustomTextSubmit?: () => void;
   containerRef?: React.RefObject<HTMLDivElement | null>;
-  selectedAnswer?: string;
+  selectedAnswer?: { answerId: number; answerText: string };
 }
-
-/**
- * ! TODO: Fix drag preview pb on mobile (offset issue), Handle text input (no change at input),
- * ! Mobile drop zone not validating the question
- */
-
-// Helper function to calculate position including scrolling and container offsets
-// const calculateDragPosition = (
-//   e: React.DragEvent | React.TouchEvent | Touch,
-//   containerRef:
-//     | React.RefObject<HTMLDivElement | null>
-//     | React.RefObject<HTMLDivElement>
-// ): Position => {
-//   const clientX = "clientX" in e ? e.clientX : e.touches[0].clientX;
-//   const clientY = "clientY" in e ? e.clientY : e.touches[0].clientY;
-
-//   console.log("Touch", clientX, clientY);
-//   // Get container position if available
-//   if (containerRef && containerRef.current) {
-//     const containerRect = containerRef.current.getBoundingClientRect();
-//     console.log(containerRect);
-//     // Calculate position relative to the container
-//     const x = clientX - containerRect.left + containerRef.current.scrollLeft;
-//     const y = clientY - containerRect.top + containerRef.current.scrollTop;
-//     console.log("Calculated Touch", x, y);
-//     return {
-//       x: clientX - containerRect.left + containerRef.current.scrollLeft,
-//       y: clientY - containerRect.top + containerRef.current.scrollTop,
-//     };
-//   }
-
-//   // Fallback if container ref not available
-//   return { x: clientX, y: clientY };
-// };
 
 export const DraggableCards = ({
   initialCards = [],
@@ -93,15 +59,7 @@ export const DraggableCards = ({
           // ... your default cards
         ]
   );
-  useEffect(() => {
-    if (droppedCard) {
-      if (!cards.some((card) => card.id === droppedCard.id)) {
-        setCards((prevCards) => [...prevCards, droppedCard]);
-      }
-    }
-    setDroppedCard(null);
-    setDropZoneText(customTextValue || "");
-  }, [cards]);
+  console.log("Selected answer:", selectedAnswer);
 
   // For desktop - Drag events
   const handleDragStart = (e: React.DragEvent, card: Card) => {
@@ -632,10 +590,10 @@ export const DraggableCards = ({
                     (draggedCard && draggedCard.id === card.id)
                       ? "none"
                       : "linear-gradient(146deg, #FF512F, #DD2476)",
-                  // border:
-                  //   targetCardId === card.id && draggedCard?.id !== card.id
-                  //     ? "2px dashed #007bff"
-                  //     : "1px solid #ccc",
+                  border:
+                    selectedAnswer?.answerId === card.id
+                      ? "2px solid #007bff"
+                      : "",
                   borderRadius: "5px",
                   cursor:
                     droppedCard && droppedCard.id !== card.id

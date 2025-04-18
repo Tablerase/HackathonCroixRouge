@@ -96,7 +96,7 @@ interface DraggableCardsWrapperProps {
   choices: AnswerChoice[];
   questionId: number;
   onAnswerSelect: (questionId: number, answerText: string) => void;
-  selectedAnswer?: string;
+  selectedAnswer?: { answerId: number; answerText: string };
   customAnswer: string;
   setCustomAnswer: (text: string) => void;
   onCustomAnswerSubmit: () => void;
@@ -132,6 +132,7 @@ const DraggableCardsWrapper: React.FC<DraggableCardsWrapperProps> = ({
   return (
     <div style={{ width: "100%" }}>
       <DraggableCards
+        key={questionId}
         initialCards={cards}
         onCardDrop={handleCardDrop}
         customText={hasTextField}
@@ -150,6 +151,8 @@ const InteractiveImageScene: React.FC = () => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
   const [answers, setAnswers] = useState<{ [questionId: number]: string }>({});
   const [customAnswer, setCustomAnswer] = useState<string>("");
+  const [questionTransition, setQuestionTransition] = useState(false);
+  const [pendingFinish, setPendingFinish] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -157,6 +160,12 @@ const InteractiveImageScene: React.FC = () => {
     if (contentRef.current) {
       contentRef.current.scrollIntoView({ behavior: "smooth" });
     }
+  }, [currentQuestionIndex]);
+
+  useEffect(() => {
+    setQuestionTransition(true);
+    const timeout = setTimeout(() => setQuestionTransition(false), 400); // duration matches CSS
+    return () => clearTimeout(timeout);
   }, [currentQuestionIndex]);
 
   // Mock data for questions
@@ -244,32 +253,37 @@ const InteractiveImageScene: React.FC = () => {
   const currentQuestion = questions[currentQuestionIndex];
 
   const handleAnswerSelect = (questionId: number, answerText: string) => {
-    setAnswers({
-      ...answers,
-      [questionId]: answerText,
+    setAnswers((prev) => {
+      const updated = { ...prev, [questionId]: answerText };
+      // If last question, set pendingFinish to true
+      if (currentQuestionIndex === questions.length - 1) {
+        setPendingFinish(true);
+      }
+      return updated;
     });
-    console.log("Selected answer:", answerText);
-    console.log("All answers:", answers);
-    console.log("Current question ID:", questionId);
 
     // Move to next question if not at the end
     if (currentQuestionIndex < questions.length - 1) {
       setTimeout(() => {
         setCurrentQuestionIndex(currentQuestionIndex + 1);
         setCustomAnswer("");
-      }, 500);
+      }, 10);
     }
   };
+
+  useEffect(() => {
+    if (
+      pendingFinish &&
+      Object.keys(answers).length === questions.length // All questions answered
+    ) {
+      handleFinish();
+      setPendingFinish(false);
+    }
+  }, [answers, pendingFinish, questions.length]);
 
   const handleCustomAnswerSubmit = () => {
     if (customAnswer.trim()) {
       handleAnswerSelect(currentQuestion.id, customAnswer);
-    }
-  };
-
-  const goToPreviousQuestion = () => {
-    if (currentQuestionIndex > 0) {
-      setCurrentQuestionIndex(currentQuestionIndex - 1);
     }
   };
 
@@ -292,6 +306,7 @@ const InteractiveImageScene: React.FC = () => {
       <ContentWrapper ref={contentRef}>
         <Paper
           elevation={3}
+          className={questionTransition ? "question-transition" : ""}
           sx={{
             p: 3,
             borderRadius: 2,
@@ -303,14 +318,25 @@ const InteractiveImageScene: React.FC = () => {
           {/* Question Stepper/Timeline */}
           <Stepper
             activeStep={currentQuestionIndex}
-            // alternativeLabel
             connector={<ColorLibConnector />}
             sx={{ mb: 4 }}
           >
-            {/* {questions.map((question, index) => ( */}
-            {questions.map((question) => (
-              <Step key={question.id}>
-                <StepLabel></StepLabel>
+            {questions.map((question, index) => (
+              <Step key={question.id} completed={index < currentQuestionIndex}>
+                <StepLabel
+                  // Make completed steps clickable
+                  onClick={() => {
+                    if (index < currentQuestionIndex) {
+                      setCurrentQuestionIndex(index);
+                    }
+                  }}
+                  style={{
+                    cursor:
+                      index < currentQuestionIndex ? "pointer" : "default",
+                    pointerEvents:
+                      index < currentQuestionIndex ? "auto" : "none",
+                  }}
+                ></StepLabel>
               </Step>
             ))}
           </Stepper>
@@ -328,7 +354,14 @@ const InteractiveImageScene: React.FC = () => {
               choices={currentQuestion.choices}
               questionId={currentQuestion.id}
               onAnswerSelect={handleAnswerSelect}
-              selectedAnswer={answers[currentQuestion.id]}
+              selectedAnswer={
+                answers[currentQuestion.id]
+                  ? {
+                      answerId: currentQuestion.id,
+                      answerText: answers[currentQuestion.id],
+                    }
+                  : undefined
+              }
               customAnswer={customAnswer}
               setCustomAnswer={setCustomAnswer}
               onCustomAnswerSubmit={handleCustomAnswerSubmit}
@@ -338,27 +371,9 @@ const InteractiveImageScene: React.FC = () => {
 
           {/* Navigation */}
           <Box sx={{ display: "flex", justifyContent: "space-between", mt: 4 }}>
-            <Button
-              variant="outlined"
-              onClick={goToPreviousQuestion}
-              disabled={currentQuestionIndex === 0}
-            >
-              Précédent
-            </Button>
-
             <Typography variant="body2" sx={{ alignSelf: "center" }}>
               Question {currentQuestionIndex + 1} of {questions.length}
             </Typography>
-
-            {currentQuestionIndex === questions.length - 1 && (
-              <Button
-                variant="contained"
-                color="success"
-                onClick={handleFinish}
-              >
-                Terminer
-              </Button>
-            )}
           </Box>
         </Paper>
       </ContentWrapper>
