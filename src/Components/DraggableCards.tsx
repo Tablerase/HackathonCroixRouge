@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect, use } from "react";
 
 interface Card {
   id: number;
@@ -15,7 +15,7 @@ interface DraggableCardsProps {
   onCardDrop?: (card: Card) => void;
   customText?: boolean;
   customTextValue?: string;
-  onCustomTextChange?: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+  onCustomTextChange?: (value: string) => void;
   onCustomTextSubmit?: () => void;
   containerRef?: React.RefObject<HTMLDivElement | null>;
   selectedAnswer?: string;
@@ -77,6 +77,9 @@ export const DraggableCards = ({
   const dropZoneTextSize = 150; // Max length of the text in the drop zone
   const containerRef = useRef<HTMLDivElement>(null);
   const dropZoneRef = useRef<HTMLDivElement>(null);
+  const [dropZoneText, setDropZoneText] = useState<string>(
+    customTextValue || ""
+  );
   const draggableAreaRef = useRef<HTMLDivElement>(null);
 
   const [cards, setCards] = useState<Card[]>(
@@ -90,10 +93,16 @@ export const DraggableCards = ({
           // ... your default cards
         ]
   );
+  useEffect(() => {
+    if (droppedCard) {
+      if (!cards.some((card) => card.id === droppedCard.id)) {
+        setCards((prevCards) => [...prevCards, droppedCard]);
+      }
+    }
+    setDroppedCard(null);
+    setDropZoneText(customTextValue || "");
+  }, [cards]);
 
-  const [dropZoneText, setDropZoneText] = useState<string>(
-    customTextValue || ""
-  );
   // For desktop - Drag events
   const handleDragStart = (e: React.DragEvent, card: Card) => {
     // If there's a card in the drop zone and we're trying to drag a card from the list
@@ -172,13 +181,8 @@ export const DraggableCards = ({
 
     // If we're dragging from the list to the drop zone
     if (!droppedCard || droppedCard.id !== draggedCard.id) {
-      // Set the dragged card as the dropped card
       setDroppedCard(draggedCard);
-
-      // Remove the card from the original list
       setCards(cards.filter((card) => card.id !== draggedCard.id));
-
-      // Call the callback if provided
       if (onCardDrop) {
         onCardDrop(draggedCard);
       }
@@ -192,7 +196,8 @@ export const DraggableCards = ({
   // Use the provided handlers if they exist
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     if (onCustomTextChange) {
-      onCustomTextChange(e);
+      onCustomTextChange(e.target.value);
+      setDropZoneText(e.target.value);
     } else {
       setDropZoneText(e.target.value);
     }
@@ -240,7 +245,6 @@ export const DraggableCards = ({
   const handleTouchStart = (e: React.TouchEvent, card: Card) => {
     // If there's a card in the drop zone and we're trying to drag a card from the list
     if (droppedCard && card.id !== droppedCard.id) {
-      e.preventDefault();
       return;
     }
 
@@ -329,6 +333,9 @@ export const DraggableCards = ({
       if (!droppedCard || droppedCard.id !== draggedCard.id) {
         setDroppedCard(draggedCard);
         setCards(cards.filter((card) => card.id !== draggedCard.id));
+        if (onCardDrop) {
+          onCardDrop(draggedCard);
+        }
       }
     } else if (
       isOverDraggableArea &&
@@ -668,8 +675,8 @@ export const DraggableCards = ({
         <div
           style={{
             position: "fixed",
-            top: dragPosition.y,
-            left: dragPosition.x,
+            top: dragPosition.y - 40 / 2,
+            left: dragPosition.x - 120 / 2,
             transform: "translate(-50%, -50%)",
             backgroundImage: "linear-gradient(146deg, #FF512F, #DD2476)",
             padding: "10px",
