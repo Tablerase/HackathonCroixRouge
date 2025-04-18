@@ -59,7 +59,7 @@ export const DraggableCards = ({
           // ... your default cards
         ]
   );
-  console.log("Selected answer:", selectedAnswer);
+  console.debug("Selected answer:", selectedAnswer);
 
   // For desktop - Drag events
   const handleDragStart = (e: React.DragEvent, card: Card) => {
