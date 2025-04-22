@@ -1,11 +1,14 @@
 import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 export const HomeLoad = () => {
+  const navigate = useNavigate();
+
   useEffect(() => {
     setTimeout(() => {
-      window.location.href = "/map";
+      navigate("/risk-assessment");
     }, 5000);
-  }, []);
+  }, [navigate]);
 
   return (
     <>
