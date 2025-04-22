@@ -1,14 +1,11 @@
-import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 export const HomeLoad = () => {
   const navigate = useNavigate();
 
-  useEffect(() => {
-    setTimeout(() => {
-      navigate("/risk-assessment");
-    }, 5000);
-  }, [navigate]);
+  setTimeout(() => {
+    navigate("/map");
+  }, 5000);
 
   return (
     <>
@@ -49,15 +46,17 @@ export const HomeLoad = () => {
 };
 
 const styles = `
+:root {
+  background-color: transparent; /* Start with a transparent background */
+  animation: thunder_flash 7s linear infinite; /* Add thunder animation */
+}
+
 .home_load {
-  width: 100vw;
   height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
   overflow: hidden; /* Prevent overflow issues during flip */
-  background-color: transparent; /* Start with a transparent background */
-  animation: thunder_flash 7s linear infinite; /* Add thunder animation */
 }
 
 /* New Thunder Animation */
