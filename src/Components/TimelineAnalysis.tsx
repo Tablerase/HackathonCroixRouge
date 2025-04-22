@@ -21,6 +21,66 @@ interface TimelineAnalysisProps {
   answers: { [questionId: number]: string };
 }
 
+// Define interfaces for timeline structure
+interface SessionData {
+  situation?: string;
+  event: string;
+  actions: string[];
+  chosen_action: string;
+}
+
+interface TimelineData {
+  timeline: {
+    [key: string]: SessionData;
+  };
+}
+
+// Function to format the questions and answers into the expected timeline format
+const formatTimelineData = (
+  questions: Question[],
+  answers: { [questionId: number]: string }
+): TimelineData => {
+  const timeline: TimelineData = {
+    timeline: {}, // Start with an empty timeline object
+  };
+
+  // Define the situation for the first session
+  const initialSituation = "Flooding";
+
+  for (let i = 0; i < questions.length; i++) {
+    const question = questions[i]; // Get the question at the current index
+
+    // Only proceed if the question exists
+    if (question) {
+      const sessionKey = `situation_${i + 1}`;
+
+      // Base session data structure
+      const sessionData: Partial<SessionData> = {
+        event: question.text || `Event ${i + 1}`, // Use question text or a default
+        actions:
+          question.choices
+            ?.filter((c) => !c.isTextField) // Filter out text field choices
+            .map((c) => c.text) || [], // Map to choice text, default to empty array
+        chosen_action: answers[question.id] || "", // Get the chosen answer or default to empty string
+      };
+
+      // Add the 'situation' field only for the first session (session_1)
+      if (i === 0) {
+        sessionData.situation = initialSituation;
+      }
+
+      // Add the constructed session data to the timeline object
+      timeline.timeline[sessionKey] = sessionData as SessionData; // Assert type as SessionData
+    } else {
+      // Optional: If you want to stop processing if a question is missing
+      // console.warn(`Question at index ${i} (for ${sessionKey}) not found.`);
+      // break;
+    }
+  }
+
+  return timeline;
+};
+
 const TimelineAnalysis: React.FC<TimelineAnalysisProps> = ({
   questions,
   answers,
@@ -67,8 +127,12 @@ const TimelineAnalysis: React.FC<TimelineAnalysisProps> = ({
         } else {
           setError(`Server responded with status: ${data}`);
         }
-      } catch (err: any) {
-        setError(err.message || "An unknown error occurred");
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          setError(err.message);
+        } else {
+          setError("An unknown error occurred");
+        }
         console.error("Error fetching analysis:", err);
       } finally {
         setLoading(false);
@@ -79,67 +143,6 @@ const TimelineAnalysis: React.FC<TimelineAnalysisProps> = ({
       fetchAnalysis();
     }
   }, [questions, answers]);
-
-  // Define interfaces for timeline structure
-  interface SessionData {
-    situation?: string;
-    event: string;
-    actions: string[];
-    chosen_action: string;
-  }
-
-  interface TimelineData {
-    timeline: {
-      [key: string]: SessionData;
-    };
-  }
-
-  // Function to format the questions and answers into the expected timeline format
-  const formatTimelineData = (
-    questions: Question[],
-    answers: { [questionId: number]: string }
-  ): TimelineData => {
-    const timeline: TimelineData = {
-      timeline: {}, // Start with an empty timeline object
-    };
-
-    // Define the situation for the first session
-    const initialSituation = "Flooding";
-
-    // Iterate through the first 4 questions (indices 0 to 3)
-    for (let i = 0; i < 4; i++) {
-      const question = questions[i]; // Get the question at the current index
-
-      // Only proceed if the question exists
-      if (question) {
-        const sessionKey = `situation_${i + 1}`;
-
-        // Base session data structure
-        const sessionData: Partial<SessionData> = {
-          event: question.text || `Event ${i + 1}`, // Use question text or a default
-          actions:
-            question.choices
-              ?.filter((c) => !c.isTextField) // Filter out text field choices
-              .map((c) => c.text) || [], // Map to choice text, default to empty array
-          chosen_action: answers[question.id] || "", // Get the chosen answer or default to empty string
-        };
-
-        // Add the 'situation' field only for the first session (session_1)
-        if (i === 0) {
-          sessionData.situation = initialSituation;
-        }
-
-        // Add the constructed session data to the timeline object
-        timeline.timeline[sessionKey] = sessionData as SessionData; // Assert type as SessionData
-      } else {
-        // Optional: If you want to stop processing if a question is missing
-        // console.warn(`Question at index ${i} (for ${sessionKey}) not found.`);
-        // break;
-      }
-    }
-
-    return timeline;
-  };
 
   return (
     <Paper elevation={3} sx={{ p: 3, mt: 4, borderRadius: 2 }}>

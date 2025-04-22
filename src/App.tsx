@@ -8,6 +8,7 @@ import RiskAssessmentScene from "./Components/RiskAssessmentScene";
 import InteractiveImageScene from "./Components/InteractiveImageScene";
 import ResultsScene from "./Components/ResultsScene";
 import { theme } from "./Components/theme";
+import { HomeLoad } from "./Components/HomeLoad";
 import { Thinking } from "./Components/Loader/Thinking";
 
 const App: React.FC = () => {
@@ -49,8 +50,9 @@ const App: React.FC = () => {
           }}
         >
           <Routes>
+            <Route path="/" element={<HomeLoad />} />
             <Route
-              path="/"
+              path="/map"
               element={
                 <MapScene
                   setUserLocation={setUserLocation}

@@ -23,7 +23,7 @@ const SceneContainer = styled("div")({
   height: "auto",
   margin: 0,
   padding: 0,
-  backgroundImage: "url(/house_with_flooding.png)",
+  // backgroundImage: "url(/house_with_flooding.png)",
   backgroundSize: "cover",
   backgroundPosition: "center",
   backgroundAttachment: "fixed", // Keep background fixed while scrolling
@@ -242,25 +242,25 @@ const InteractiveImageScene: React.FC = () => {
         { id: 4, text: "", isTextField: true },
       ],
     },
-    {
-      id: 5,
-      text: "During the flooding event, what is the most reliable way to stay informed about the situation?",
-      choices: [
-        {
-          id: 1,
-          text: "Check official social media accounts of emergency services",
-        },
-        {
-          id: 2,
-          text: "Listen to a battery-powered radio for local news updates",
-        },
-        {
-          id: 3,
-          text: "Monitor emergency alert systems on your mobile device",
-        },
-        { id: 4, text: "", isTextField: true },
-      ],
-    },
+    // {
+    //   id: 5,
+    //   text: "During the flooding event, what is the most reliable way to stay informed about the situation?",
+    //   choices: [
+    //     {
+    //       id: 1,
+    //       text: "Check official social media accounts of emergency services",
+    //     },
+    //     {
+    //       id: 2,
+    //       text: "Listen to a battery-powered radio for local news updates",
+    //     },
+    //     {
+    //       id: 3,
+    //       text: "Monitor emergency alert systems on your mobile device",
+    //     },
+    //     { id: 4, text: "", isTextField: true },
+    //   ],
+    // },
   ];
 
   const currentQuestion = questions[currentQuestionIndex];

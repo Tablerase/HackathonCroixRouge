@@ -57,4 +57,12 @@ VITE_API_URL=backend-url
 npm run build
 ````
 
-## Example
+## Resources
+
+- https://uiverse.io/Nawsome/curly-goose-54
+
+Inspirations / Ideas:
+
+- https://www.windmill.dev/blog/react-draggable-component
+- https://uiverse.io/vinodjangid07/popular-owl-27
+- https://www.flaticon.com/free-animated-icon/recipe-book_6449689
