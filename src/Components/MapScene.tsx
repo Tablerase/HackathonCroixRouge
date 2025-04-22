@@ -217,7 +217,7 @@ const MapScene: React.FC<MapSceneProps> = ({
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               />
               <Marker position={[position.lat, position.lng]}>
-                <Popup>Vous êtes ici</Popup>
+                <Popup>You are here !</Popup>
               </Marker>
             </MapContainer>
           ) : (
@@ -244,7 +244,7 @@ const MapScene: React.FC<MapSceneProps> = ({
           disabled={loading}
           sx={{ mb: 2 }}
         >
-          {loading ? "Evaluation..." : "Evalue mes risques"}
+          {loading ? "Evaluating..." : "Assess my risks"}
         </Button>
 
         {/* <Test /> */}

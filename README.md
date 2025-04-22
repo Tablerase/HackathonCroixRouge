@@ -1,63 +1,60 @@
-# React + TypeScript + Vite
+# Client for Crisis Prevention
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Technologies Used
 
-Currently, two official plugins are available:
+- React
+- Vite
+- TypeScript
+- Material UI
+- React Leaflet
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Description
 
-## Expanding the ESLint configuration
+This project is a client for a crisis prevention application. It provides a user-friendly interface for users to interact with the crisis prevention system. The application is built using React and Vite, ensuring a fast and efficient development experience.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Demo
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ["./tsconfig.node.json", "./tsconfig.app.json"],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-});
+1. User location
+2. Crisis approximation (most likely for the user location - mocked for now - can be improved in the future)
+3. Crisis prevention (using predefined crisis timelines for now to prevent halucinations - can be improved in the future)
+4. Analysis of response: Feed to RAG model to analyze the response and provide feedback (LLM used for this)
+
+## Setup
+
+1. Clone the repository
+
+```bash
+git clone <repo-url>
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+2. Navigate to the project directory
 
-```js
-// eslint.config.js
-import reactX from "eslint-plugin-react-x";
-import reactDom from "eslint-plugin-react-dom";
-
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    "react-x": reactX,
-    "react-dom": reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs["recommended-typescript"].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-});
+```bash
+cd <project-directory>
 ```
 
-## Assets
+3. Install dependencies
 
-Ideas:
+```bash
+npm install
+```
 
-- https://www.windmill.dev/blog/react-draggable-component
+4. Start the development server
 
-- https://uiverse.io/vinodjangid07/popular-owl-27
-- https://www.flaticon.com/free-animated-icon/recipe-book_6449689
+```bash
+npm run dev
+```
+
+5. Create build for production
+
+````bash
+echo "
+VITE_API_URL=backend-url
+" > .env
+```
+
+```bash
+npm run build
+````
+
+## Example

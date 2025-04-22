@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Box, Typography, Paper, CircularProgress, Alert } from "@mui/material";
+import { Box, Typography, Paper, Alert } from "@mui/material";
 import ReactMarkdown from "react-markdown";
 import axios from "axios";
+import { Thinking } from "./Loader/Thinking";
 
 interface AnswerChoice {
   id: number;
@@ -36,14 +37,15 @@ const TimelineAnalysis: React.FC<TimelineAnalysisProps> = ({
 
         // Format the questions and answers into a timeline JSON format
         const timeline = formatTimelineData(questions, answers);
+        console.log("Formatted timeline data:", timeline);
 
         // Encode the timeline as a URI component
-        const encodedTimeline = encodeURIComponent(JSON.stringify(timeline));
+        // const encodedTimeline = encodeURIComponent(JSON.stringify(timeline));
 
         // Make the API request
         const response = await axios.post(
           `/api/timeline/analyze/`,
-          encodedTimeline
+          JSON.stringify(timeline)
         );
 
         // Extract the data directly from axios response
@@ -54,11 +56,16 @@ const TimelineAnalysis: React.FC<TimelineAnalysisProps> = ({
         // }
 
         // const data = await response.json();
+        console.log("API response data:", data);
 
-        if (data.status === 200) {
+        if (
+          data.status === 200 ||
+          data.message === "OK" ||
+          data.status === 201
+        ) {
           setAnalysis(data.data);
         } else {
-          setError(`Server responded with status: ${data.message}`);
+          setError(`Server responded with status: ${data}`);
         }
       } catch (err: any) {
         setError(err.message || "An unknown error occurred");
@@ -92,34 +99,44 @@ const TimelineAnalysis: React.FC<TimelineAnalysisProps> = ({
     questions: Question[],
     answers: { [questionId: number]: string }
   ): TimelineData => {
-    // Create a timeline object based on questions and answers
     const timeline: TimelineData = {
-      timeline: {
-        session_0: {
-          situation: "Situation d'inondation",
-          event: questions[0]?.text || "Événement inconnu",
-          actions:
-            questions[0]?.choices
-              .filter((c) => !c.isTextField)
-              .map((c) => c.text) || [],
-          chosen_action: answers[questions[0]?.id] || "",
-        },
-      },
+      timeline: {}, // Start with an empty timeline object
     };
 
-    // Add sessions 1-3 based on available questions
-    questions.slice(1).forEach((question, index) => {
-      const sessionNumber = index + 1;
-      if (sessionNumber <= 3) {
-        timeline.timeline[`session_${sessionNumber}`] = {
-          event: question.text || `Événement ${sessionNumber}`,
+    // Define the situation for the first session
+    const initialSituation = "Flooding";
+
+    // Iterate through the first 4 questions (indices 0 to 3)
+    for (let i = 0; i < 4; i++) {
+      const question = questions[i]; // Get the question at the current index
+
+      // Only proceed if the question exists
+      if (question) {
+        const sessionKey = `situation_${i + 1}`;
+
+        // Base session data structure
+        const sessionData: Partial<SessionData> = {
+          event: question.text || `Event ${i + 1}`, // Use question text or a default
           actions:
-            question.choices.filter((c) => !c.isTextField).map((c) => c.text) ||
-            [],
-          chosen_action: answers[question.id] || "",
+            question.choices
+              ?.filter((c) => !c.isTextField) // Filter out text field choices
+              .map((c) => c.text) || [], // Map to choice text, default to empty array
+          chosen_action: answers[question.id] || "", // Get the chosen answer or default to empty string
         };
+
+        // Add the 'situation' field only for the first session (session_1)
+        if (i === 0) {
+          sessionData.situation = initialSituation;
+        }
+
+        // Add the constructed session data to the timeline object
+        timeline.timeline[sessionKey] = sessionData as SessionData; // Assert type as SessionData
+      } else {
+        // Optional: If you want to stop processing if a question is missing
+        // console.warn(`Question at index ${i} (for ${sessionKey}) not found.`);
+        // break;
       }
-    });
+    }
 
     return timeline;
   };
@@ -127,18 +144,19 @@ const TimelineAnalysis: React.FC<TimelineAnalysisProps> = ({
   return (
     <Paper elevation={3} sx={{ p: 3, mt: 4, borderRadius: 2 }}>
       <Typography variant="h5" gutterBottom align="center">
-        Analyse de vos choix
+        Choice Analysis
       </Typography>
 
       {loading && (
         <Box sx={{ display: "flex", justifyContent: "center", my: 4 }}>
-          <CircularProgress />
+          {/* <CircularProgress /> */}
+          <Thinking />
         </Box>
       )}
 
       {error && (
         <Alert severity="error" sx={{ my: 2 }}>
-          Erreur lors de l'analyse: {error}
+          Error during analysis: {error}
         </Alert>
       )}
 
@@ -150,7 +168,7 @@ const TimelineAnalysis: React.FC<TimelineAnalysisProps> = ({
 
       {!loading && !error && !analysis && (
         <Alert severity="info" sx={{ my: 2 }}>
-          Pas d'analyse disponible pour le moment.
+          No analysis available at the moment.
         </Alert>
       )}
     </Paper>

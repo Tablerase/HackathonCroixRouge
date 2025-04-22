@@ -49,7 +49,7 @@ const ResultsScene: React.FC = () => {
     <Box sx={{ maxWidth: 800, mx: "auto", p: 2 }}>
       <Paper elevation={3} sx={{ p: 3, borderRadius: 2, mb: 4 }}>
         <Typography variant="h5" gutterBottom align="center">
-          Résultats de l'évaluation
+          Results
         </Typography>
 
         <List sx={{ mb: 4 }}>
@@ -75,14 +75,14 @@ const ResultsScene: React.FC = () => {
           variant="outlined"
           onClick={() => navigate("/interactive-guide")}
         >
-          Retour aux Questions
+          Return to Questions
         </Button>
         <Button
           variant="contained"
           color="primary"
           onClick={() => navigate("/")}
         >
-          Retour à l'Accueil
+          Return to Home
         </Button>
       </Box>
     </Box>
