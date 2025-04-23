@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Box, Typography, Paper, Alert } from "@mui/material";
 import ReactMarkdown from "react-markdown";
-import axios from "axios";
 import { Thinking } from "./Loader/Thinking";
 
 interface AnswerChoice {
