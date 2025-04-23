@@ -99,23 +99,25 @@ const TimelineAnalysis: React.FC<TimelineAnalysisProps> = ({
         const timeline = formatTimelineData(questions, answers);
         console.log("Formatted timeline data:", timeline);
 
-        // Encode the timeline as a URI component
-        // const encodedTimeline = encodeURIComponent(JSON.stringify(timeline));
+        // Make the API request using fetch
+        const response = await fetch(`/api/timeline/analyze/`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(timeline), // Stringify the body for fetch
+        });
 
-        // Make the API request
-        const response = await axios.post(
-          `/api/timeline/analyze/`,
-          JSON.stringify(timeline)
-        );
+        if (!response.ok) {
+          // Handle HTTP errors (e.g., 4xx, 5xx)
+          const errorText = await response.text(); // Get error details if available
+          throw new Error(
+            `API request failed with status ${response.status}: ${errorText}`
+          );
+        }
 
-        // Extract the data directly from axios response
-        const data = response.data;
-
-        // if (!response.ok) {
-        //   throw new Error(`API request failed with status ${response.status}`);
-        // }
-
-        // const data = await response.json();
+        // Extract the JSON data from the fetch response
+        const data = await response.json();
         console.log("API response data:", data);
 
         if (
