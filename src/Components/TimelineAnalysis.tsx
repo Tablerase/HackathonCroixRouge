@@ -100,13 +100,16 @@ const TimelineAnalysis: React.FC<TimelineAnalysisProps> = ({
         console.log("Formatted timeline data:", timeline);
 
         // Make the API request using fetch
-        const response = await fetch(`/api/timeline/analyze/`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(timeline), // Stringify the body for fetch
-        });
+        const response = await fetch(
+          `https://hackathon-ia-et-crise.fr/tousconcernes/rag-system/api/app/timeline/analyze/`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(timeline), // Stringify the body for fetch
+          }
+        );
 
         if (!response.ok) {
           // Handle HTTP errors (e.g., 4xx, 5xx)
