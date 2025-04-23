@@ -100,7 +100,7 @@ const TimelineAnalysis: React.FC<TimelineAnalysisProps> = ({
 
         // Make the API request using fetch
         const response = await fetch(
-          `https://hackathon-ia-et-crise.fr/tousconcernes/rag-system/api/app/timeline/analyze/`,
+          `https://hackathon-ia-et-crise.fr/tousconcernes/hackathon/api/app/timeline/analyze/`,
           {
             method: "POST",
             headers: {
